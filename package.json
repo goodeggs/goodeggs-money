@@ -1,0 +1,34 @@
+{
+  "name": "goodeggs-money",
+  "version": "1.0.0",
+  "description": "Reliable money math with BigNumber  wrapped inside Cents",
+  "author": "Good Eggs <open-source@goodeggs.com>",
+  "contributors": [
+    "John Rothfels <john.rothfels@gmail.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "money math arithmetic bignumber cents"
+  ],
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/goodeggs/goodeggs-money.git"
+  },
+  "homepage": "https://github.com/goodeggs/goodeggs-money",
+  "bugs": "https://github.com/goodeggs/goodeggs-money/issues",
+  "dependencies": {
+    "bignumber.js": "^2.0.3",
+    "chai": "^2.0.0"
+  },
+  "devDependencies": {
+    "coffee-script": ">=1.8.x",
+    "mocha": "~1.x.x"
+  },
+  "scripts": {
+    "compile": "coffee --bare --compile --output lib/ src/",
+    "prepublish": "npm run compile",
+    "pretest": "npm run compile",
+    "test": "mocha"
+  }
+}
