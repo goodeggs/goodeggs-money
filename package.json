@@ -25,6 +25,10 @@
     "coffee-script": ">=1.8.x",
     "mocha": "~1.x.x"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "always-auth": true
+  },
   "scripts": {
     "compile": "coffee --bare --compile --output lib/ src/",
     "prepublish": "npm run compile",
