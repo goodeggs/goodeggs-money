@@ -13,7 +13,7 @@ validateCentsScalar = (scalar) ->
   unless typeof(scalar) is 'number' and isInt(scalar) and scalar > 0
     throw new Error "#{scalar} must be a positive number"
 
-module.exports = class Cents
+module.exports = Cents = class Cents
   constructor: (@value) ->
     @value = @value.toNumber() if @value instanceof BigNumber
     @value = Number(@value) if typeof(@value) is 'string'
@@ -40,3 +40,7 @@ module.exports = class Cents
     new Cents(@toBigNumber().dividedBy(scalar))
 
   toString: -> "$#{new BigNumber(@toDollars()).toFixed(2)}" # always show 2 decimal places
+
+Cents.fromDollars = (dollars) ->
+  # dollars should be a Number like xx.yy
+  new Cents(new BigNumber(dollars).times(100))

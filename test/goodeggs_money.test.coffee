@@ -30,6 +30,11 @@ describe 'Cents', ->
     expect(new Cents(10) .toString()).to.equal '$0.10'
     expect(new Cents(100).toString()).to.equal '$1.00'
 
+  it 'has a static method to convert dollars', ->
+    expect(Cents.fromDollars(0.01)).to.have.property('value', 1)
+    expect(Cents.fromDollars(1.01)).to.have.property('value', 101)
+    expect(-> Cents.fromDollars(1.000001)).to.throw()
+
   describe 'arithmetic', ->
 
     describe 'plus', ->
