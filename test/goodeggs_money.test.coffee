@@ -15,6 +15,10 @@ describe 'Cents', ->
     cents = new Cents(new BigNumber(0))
     expect(cents.value).to.equal 0
 
+  it 'can construct with Cents', ->
+    cents = new Cents(new Cents(1))
+    expect(cents.value).to.equal 1
+
   it 'throws if constructed with non-int number', ->
     expect(-> new Cents(1.01)).to.throw()
 
@@ -34,6 +38,29 @@ describe 'Cents', ->
     expect(Cents.fromDollars(0.01)).to.have.property('value', 1)
     expect(Cents.fromDollars(1.01)).to.have.property('value', 101)
     expect(-> Cents.fromDollars(1.000001)).to.throw()
+
+  it 'has a static method to max cents', ->
+    expect(-> Cents.max()).to.throw()
+    expect(Cents.max(new Cents(3))).to.have.property('value', 3)
+    expect(Cents.max(new Cents(3), new Cents(1), new Cents(2))).to.have.property('value', 3)
+    expect(Cents.max(new Cents(2), new Cents(3), new Cents(1))).to.have.property('value', 3)
+
+  it 'has a static method to max cents', ->
+    expect(-> Cents.max()).to.throw()
+    expect(Cents.max(new Cents(3))).to.have.property('value', 3)
+    expect(Cents.max(new Cents(2), new Cents(3), new Cents(1))).to.have.property('value', 3)
+
+  it 'has a static method to min cents', ->
+    expect(-> Cents.max()).to.throw()
+    expect(Cents.min(new Cents(3))).to.have.property('value', 3)
+    expect(Cents.min(new Cents(3), new Cents(1), new Cents(2))).to.have.property('value', 1)
+
+  describe '.equals', ->
+
+    it 'should be true if the argument is a Cents object with the same value', ->
+      cents = new Cents(5)
+      expect(cents.equals(new Cents(5))).to.be.true
+      expect(cents.equals(5)).to.be.false
 
   describe 'arithmetic', ->
 
@@ -67,20 +94,24 @@ describe 'Cents', ->
 
       it 'should throw an exception if an invalid scalar is provided', ->
         expect(-> new Cents(1).times(0.5)).to.throw()
-        expect(-> new Cents(1).times('1')).to.throw()
-        expect(-> new Cents(100).times(0)).to.throw()
         expect(-> new Cents(10).times(-3)).to.throw()
 
       it 'should return a new Cents with the correct value', ->
         cents = new Cents(5)
         expect(cents.times(1)).to.have.property('value', 5)
         expect(cents.times(5)).to.have.property('value', 25)
+        expect(cents.times(0.2)).to.have.property('value', 1)
+        expect(cents.times(0)).to.have.property('value', 0)
+
+      it 'should allow transform', ->
+        cents = new Cents(5)
+        expect(cents.times(0.5, transform: 'round')).to.have.property('value', 3)
+        expect(cents.times(0.5, transform: 'floor')).to.have.property('value', 2)
 
     describe 'dividedBy', ->
 
       it 'should throw an exception if an invalid scalar is provided', ->
-        expect(-> new Cents(1).dividedBy(0.5)).to.throw()
-        expect(-> new Cents(1).dividedBy('1')).to.throw()
+        expect(-> new Cents(1).dividedBy(0.6)).to.throw()
         expect(-> new Cents(100).dividedBy(0)).to.throw()
         expect(-> new Cents(10).dividedBy(-2)).to.throw()
 
@@ -88,4 +119,10 @@ describe 'Cents', ->
         cents = new Cents(10)
         expect(cents.dividedBy(2)).to.have.property('value', 5)
         expect(cents.dividedBy(5)).to.have.property('value', 2)
+        expect(cents.dividedBy(0.5)).to.have.property('value', 20)
+
+      it 'should allow transform', ->
+        cents = new Cents(5)
+        expect(cents.dividedBy(50, transform: 'round')).to.have.property('value', 0)
+        expect(cents.dividedBy(50, transform: 'ceil')).to.have.property('value', 1)
 
