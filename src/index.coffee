@@ -55,6 +55,9 @@ Cents.fromDollars = (dollars) ->
   # dollars should be a Number like xx.yy
   new Cents(new BigNumber(dollars).times(100))
 
+Cents.round = (maybeInt) ->
+  new Cents(new BigNumber(maybeInt).round())
+
 Cents.min = (cents...) ->
   throw new Error 'Cents.min expects at least one value' unless cents.length > 0
   cents = cents.map (cent) -> (new Cents(cent)).toNumber() # wrap (validate) then unwrap cent

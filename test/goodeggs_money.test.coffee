@@ -55,6 +55,10 @@ describe 'Cents', ->
     expect(Cents.min(new Cents(3))).to.have.property('value', 3)
     expect(Cents.min(new Cents(3), new Cents(1), new Cents(2))).to.have.property('value', 1)
 
+  it 'should have a static method to round to cents', ->
+    expect(Cents.round(.4999)).to.have.property('value', 0)
+    expect(Cents.round(.5)).to.have.property('value', 1)
+
   describe '.equals', ->
 
     it 'should be true if the argument is a Cents object with the same value', ->
