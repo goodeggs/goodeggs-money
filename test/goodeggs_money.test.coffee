@@ -42,29 +42,35 @@ describe 'Cents', ->
   it 'has a static method to max cents', ->
     expect(-> Cents.max()).to.throw()
     expect(Cents.max(new Cents(3))).to.have.property('value', 3)
-    expect(Cents.max(new Cents(3), new Cents(1), new Cents(2))).to.have.property('value', 3)
-    expect(Cents.max(new Cents(2), new Cents(3), new Cents(1))).to.have.property('value', 3)
-
-  it 'has a static method to max cents', ->
-    expect(-> Cents.max()).to.throw()
-    expect(Cents.max(new Cents(3))).to.have.property('value', 3)
     expect(Cents.max(new Cents(2), new Cents(3), new Cents(1))).to.have.property('value', 3)
 
   it 'has a static method to min cents', ->
-    expect(-> Cents.max()).to.throw()
+    expect(-> Cents.min()).to.throw()
     expect(Cents.min(new Cents(3))).to.have.property('value', 3)
     expect(Cents.min(new Cents(3), new Cents(1), new Cents(2))).to.have.property('value', 1)
 
-  it 'should have a static method to round to cents', ->
+  it 'has a static method to round to Cents', ->
     expect(Cents.round(.4999)).to.have.property('value', 0)
     expect(Cents.round(.5)).to.have.property('value', 1)
 
   describe '.equals', ->
 
-    it 'should be true if the argument is a Cents object with the same value', ->
+    it 'should be true if the argument is a Cents object with the same value when strict', ->
       cents = new Cents(5)
       expect(cents.equals(new Cents(5))).to.be.true
       expect(cents.equals(5)).to.be.false
+
+    it 'should allow strict mode false', ->
+      expect(new Cents(5).equals(5, strict: false)).to.be.true
+      expect(new Cents(5).equals('5', strict: false)).to.be.true
+
+    it 'should have an is0() alias', ->
+      expect((new Cents(0)).is0()).to.be.true
+      expect((new Cents(1)).is0()).to.be.false
+
+    it 'should have an isnt0() alias', ->
+      expect((new Cents(0)).isnt0()).to.be.false
+      expect((new Cents(1)).isnt0()).to.be.true
 
   describe 'arithmetic', ->
 
@@ -82,6 +88,10 @@ describe 'Cents', ->
       it 'should accept a string param and return a new Cents with the correct value', ->
         expect(new Cents(1).plus('2')).to.have.property('value', 3)
 
+      it 'should allow strict mode true', ->
+        expect(-> new Cents(5).plus('5')).not.to.throw()
+        expect(-> new Cents(5).plus('5', strict: true)).to.throw()
+
     describe 'minus', ->
 
       it 'should return a new Cents with the correct amount', ->
@@ -90,9 +100,13 @@ describe 'Cents', ->
       it 'should throw an expection if a negative cents would be returned', ->
         expect(-> new Cents(1).minus(2)).to.throw()
 
-      it 'should now throw an expection if maxZero flag is set', ->
+      it 'should prevent underflow exception when maxZero flag is set', ->
         shouldBeZero = new Cents(1).minus(2, maxZero: true)
         expect(shouldBeZero).to.have.property('value', 0)
+
+      it 'should allow strict mode true', ->
+        expect(-> new Cents(5).minus('5')).not.to.throw()
+        expect(-> new Cents(5).minus('5', strict: true)).to.throw()
 
     describe 'times', ->
 

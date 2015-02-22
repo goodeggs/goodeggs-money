@@ -18,12 +18,12 @@ module.exports = Cents = class Cents
   toDollars: -> @toBigNumber().dividedBy(100).toNumber()
   toNumber: -> @value
 
-  plus: (cents) ->
-    cents = new Cents(cents) # validate
+  plus: (cents, {strict} = {strict: false}) ->
+    cents = new Cents(cents) unless strict
     new Cents(@toBigNumber().plus(cents.toNumber()))
 
-  minus: (cents, {maxZero} = {maxZero: false}) ->
-    cents = new Cents(cents) # validate
+  minus: (cents, {strict, maxZero} = {strict: false, maxZero: false}) ->
+    cents = new Cents(cents) unless strict
     result = @toBigNumber().minus(cents.toNumber()).toNumber() # Number; may be negative
 
     if maxZero
@@ -45,9 +45,17 @@ module.exports = Cents = class Cents
     result = result[transform]() if transform?
     new Cents(result)
 
-  equals: (otherCents) ->
-    # 'Strict' equality; otherCents must be an instance of Cents.
-    (otherCents instanceof Cents) and (@toNumber() is otherCents.toNumber())
+  equals: (otherCents, {strict} = {strict: true}) ->
+    centsEqual = => @toNumber() is otherCents.toNumber() # assumes otherCents is a Cents
+    if strict
+      (otherCents instanceof Cents) and centsEqual()
+    else
+      otherCents = new Cents(otherCents) # wrap first
+      centsEqual()
+
+  # Handy aliases.
+  is0: -> @equals(new Cents(0))
+  isnt0: -> !@is0()
 
   toString: -> "$#{new BigNumber(@toDollars()).toFixed(2)}" # always show 2 decimal places
 
