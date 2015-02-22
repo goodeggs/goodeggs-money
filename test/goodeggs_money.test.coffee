@@ -53,6 +53,14 @@ describe 'Cents', ->
     expect(Cents.round(.4999)).to.have.property('value', 0)
     expect(Cents.round(.5)).to.have.property('value', 1)
 
+  it 'has a static method to validate Cents', ->
+    expect(Cents.isValid(new Cents(1))).to.be.true
+    expect(Cents.isValid('1')).to.be.true
+    expect(Cents.isValid(1)).to.be.true
+    expect(Cents.isValid(-1)).to.be.false
+    expect(Cents.isValid(1.5)).to.be.false
+    expect(Cents.isValid('1.5')).to.be.false
+
   describe '.equals', ->
 
     it 'should be true if the argument is a Cents object with the same value when strict', ->

@@ -59,6 +59,14 @@ module.exports = Cents = class Cents
 
   toString: -> "$#{new BigNumber(@toDollars()).toFixed(2)}" # always show 2 decimal places
 
+Cents.isValid = (maybeCents) ->
+  threw = false
+  try
+    new Cents(maybeCents)
+  catch
+    threw = true
+  !threw
+
 Cents.fromDollars = (dollars) ->
   # dollars should be a Number like xx.yy
   new Cents(new BigNumber(dollars).times(100))
