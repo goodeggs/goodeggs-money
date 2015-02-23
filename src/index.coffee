@@ -1,5 +1,4 @@
 BigNumber = require 'bignumber.js'
-_ = require 'lodash'
 
 # http://stackoverflow.com/questions/3885817/how-to-check-if-a-number-is-float-or-integer
 isInt = (maybeInt) -> maybeInt % 1 is 0
