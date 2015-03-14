@@ -66,21 +66,63 @@ Cents.isValid = (maybeCents) ->
     threw = true
   !threw
 
+Cents.isValidDollars = (maybeDollars) ->
+  threw = false
+  try
+    Cents.fromDollars(maybeDollars)
+  catch
+    threw = true
+  !threw
+
 Cents.fromDollars = (dollars) ->
   # dollars should be a Number like xx.yy
   new Cents(new BigNumber(dollars).times(100))
 
 Cents.round = (maybeInt) ->
+  throw new Error "#{maybeInt} must be positive to round to cents" unless maybeInt > 0
   new Cents(new BigNumber(maybeInt).round())
 
+# This method supports static method calls of the form:
+#   Cents.staticMethod(...)
+#
+# The ... must include at least one argument.
+#
+# Case 1: ... => single argument array
+#   There must be no other arguments and each value in the array must "pass" the
+#   validator (boolean) predicate function. Returns the array.
+# Case 2: ... => multiple argument values
+#   Each value must "pass" the validator predicate function. Returns an array of the values.
+arrayifySplat = (splat, validator) ->
+  throw new Error 'Expect at least one argument' unless splat.length > 0
+
+  if Array.isArray(splat[0])
+    unless splat.length is 1
+      throw new Error 'Expect a single array argument'
+    splat = splat[0]
+
+  if validator?
+    splat.forEach (val) ->
+      unless validator(val)
+        throw new Error "Unexpected value #{val}"
+
+  splat
+
 Cents.min = (cents...) ->
-  throw new Error 'Cents.min expects at least one value' unless cents.length > 0
-  cents = cents.map (cent) -> (new Cents(cent)).toNumber() # wrap (validate) then unwrap cent
+  cents = arrayifySplat(cents, Cents.isValid)
+  cents = cents.map (cent) -> new Cents(cent).toNumber()
   min = Math.min(cents...)
   new Cents(min)
 
 Cents.max = (cents...) ->
-  throw new Error 'Cents.max expects at least one value' unless cents.length > 0
-  cents = cents.map (cent) -> (new Cents(cent)).toNumber() # wrap (validate) then unwrap cent
+  cents = arrayifySplat(cents, Cents.isValid)
+  cents = cents.map (cent) -> new Cents(cent).toNumber()
   max = Math.max(cents...)
   new Cents(max)
+
+Cents.sum = (cents...) ->
+  cents = arrayifySplat(cents, Cents.isValid)
+  cents.reduce ((memo, val) -> memo.plus(val)), new Cents(0)
+
+Cents.sumDollars = (dollars...) ->
+  dollars = arrayifySplat(dollars, Cents.isValidDollars)
+  dollars.reduce ((memo, val) -> memo.plus(Cents.fromDollars(val))), new Cents(0)
