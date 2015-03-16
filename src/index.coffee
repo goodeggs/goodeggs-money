@@ -5,8 +5,10 @@ isInt = (maybeInt) -> maybeInt % 1 is 0
 
 module.exports = Cents = class Cents
   constructor: (@value) ->
-    @value = @value.toNumber() if @value instanceof BigNumber
-    @value = @value.toNumber() if @value instanceof Cents
+    if @value?.toNumber?
+      # Could be instanceof BigNumber or Cents.
+      @value = @value.toNumber()
+
     @value = Number(@value) if typeof(@value) is 'string'
     throw new Error "#{@value} must be a Number"     unless typeof(@value) is 'number'
     throw new Error "#{@value} must not be NaN"      if isNaN(@value)
