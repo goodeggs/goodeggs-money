@@ -46,6 +46,12 @@ module.exports = Cents = class Cents
     result = result[transform]() if transform?
     new Cents(result)
 
+  percent: (percent, {transform} = {transform: 'round'}) ->
+    # Is equivalent to @times(percent / 100, {transform})
+    # but avoids (percent / 100) returning too many sig figs for BigNumber.
+    scalar = new BigNumber(percent).dividedBy(100).toNumber()
+    @times(scalar, {transform})
+
   equals: (otherCents, {strict} = {strict: true}) ->
     centsEqual = => @toNumber() is otherCents.toNumber() # assumes otherCents is a Cents
     if strict

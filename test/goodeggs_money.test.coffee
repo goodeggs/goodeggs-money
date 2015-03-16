@@ -261,6 +261,20 @@ describe 'Cents', ->
         expect(cents.dividedBy(50, transform: 'round')).to.have.property('value', 0)
         expect(cents.dividedBy(50, transform: 'ceil')).to.have.property('value', 1)
 
+    describe 'percent', ->
+
+      it 'should be equivalent to "times(percent / 100)"', ->
+        cents1 = new Cents(10).percent(50)
+        cents2 = new Cents(10).times(50 / 100)
+        expect(cents1.equals(cents2)).to.be.true
+
+      it 'should have a default transform of "round"', ->
+        expect(new Cents(3).percent(50)).to.have.property('value', 2)
+
+      it 'should avoid sig fig errors', ->
+        expect(-> new Cents(10).times(17.3 / 100, transform: 'round')).to.throw()
+        expect(-> new Cents(10).percent(17.3, transform: 'round')).not.to.throw()
+
   describe 'toString', ->
 
     it 'should be correctly formatted', ->
