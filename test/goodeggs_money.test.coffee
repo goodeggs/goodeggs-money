@@ -99,6 +99,9 @@ describe 'Cents', ->
     it 'rounds up', ->
       expect(Cents.round(.5)).to.have.property('value', 1)
 
+    it 'rounds 0', ->
+      expect(Cents.round(0)).to.have.property('value', 0)
+
     it 'throws if given a negative number', ->
       expect(-> Cents.round(-0.1)).to.throw()
 

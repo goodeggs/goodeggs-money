@@ -87,7 +87,7 @@ Cents.fromDollars = (dollars) ->
   new Cents(new BigNumber(dollars).times(100))
 
 Cents.round = (maybeInt) ->
-  throw new Error "#{maybeInt} must be positive to round to cents" unless maybeInt > 0
+  throw new Error "#{maybeInt} must be positive to round to cents" unless maybeInt >= 0
   new Cents(new BigNumber(maybeInt).round())
 
 # This method supports static method calls of the form:
