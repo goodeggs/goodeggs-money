@@ -1,6 +1,6 @@
 # Goodeggs Money
 
-Reliable money math with BigNumber  wrapped inside Cents
+Reliable money math with [BigNumber](https://www.npmjs.com/package/bignumber.js) wrapped inside cents
 
 [![NPM version](http://img.shields.io/npm/v/goodeggs-money.svg?style=flat-square)](https://www.npmjs.org/package/goodeggs-money)
 [![Build Status](http://img.shields.io/travis/goodeggs/goodeggs-money.svg?style=flat-square)](https://travis-ci.org/goodeggs/goodeggs-money)
@@ -12,9 +12,56 @@ Reliable money math with BigNumber  wrapped inside Cents
 npm install goodeggs-money
 ```
 
-```javascript
-var goodeggsMoney = require('goodeggs-money');
+```coffee
+Cents = require 'goodeggs-money'
+
+new Cents(10).toDollars() # 0.10
+new Cents(10).toNumber() # 10
+
+cents = Cents.fromDollars(33.44) # Cents(3344)
+cents = cents.plus(1) # safe arithmetic
+cents.toDollars()  # 33.45
+cents.equals new Cents(3345) # true
+
+_.sumCents([new Cents(1), new Cents(2)]) # Cents(3)
+
+new Cents(new Cents(4)) # Cents(4); safe to re-wrap Cents
+new Cents(33.44) # will throw
+new Cents(-1) # will throw
+new Cents(2).minus(3) # will throw
+new Cents(2).minus(3, maxZero: true) # Cents(0)
+new Cents(3).times(.5) # will throw
+new Cents(3).times(.5, transform: 'round') # Cents(2)
+new Cents(3).times(.5, transform: 'floor') # Cents(1)
 ```
+
+## Why?
+
+**Alleviate floating point errors**
+
+Floating-point math in computers is notorious for causing strange rounding errors. In JavaScript, this is particularly a problem. Example:
+
+```javascript
+> 0.10 + 0.20
+0.30000000000000004
+```
+
+Obviously, when dealing with money, it won't do to have rounding errors like this. They can accumulate and eventually cause weird issues. Instead, better to use whole numbers everywhere, and do math with atomic cents instead of divisible dollars.
+
+**No negative money**
+
+This module will throw an exception if you do an operation that results in negative money. Our philosophy is to prefer always representing money with positive numbers, and use variable names to express the meaning. (What does it mean for `amountOwed` to be negative? Not obvious. But having two variables, `amountInAccount` and `amountOwed`, is much more meaningful and explicit.)
+
+**Make things explicit**
+
+Using a module like this, every time you deal with money you'll be manipulating a `Cents` object instead of just manipulating a generic `Number`. This means that everyone encountering your code will know what your money variable is supposed to represent.
+
+Additionally, there are operations we might want to take on money that we want to make sure happen the same way every time. This module makes these sorts of operations explicit and simple, at the cost of a bit of extra verbosity.
+
+**Support big numbers**
+
+This module uses a `BigNumber` implementation, which supports arbitrarily large integers. No limits on your money!
+
 
 ## Contributing
 
