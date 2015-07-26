@@ -15,8 +15,9 @@ npm install goodeggs-money
 ```coffee
 Cents = require 'goodeggs-money'
 
-new Cents(10).toDollars() # 0.10
+new Cents(10).toDollars() # 0.1
 new Cents(10).toNumber() # 10
+new Cents(10).toString() # "$0.10"
 
 cents = Cents.fromDollars(33.44) # Cents(3344)
 cents = cents.plus(1) # safe arithmetic
