@@ -23,6 +23,8 @@ cents = Cents.fromDollars(33.44) # Cents(3344)
 cents = cents.plus(1) # safe arithmetic
 cents.toDollars()  # 33.45
 cents.equals new Cents(3345) # true
+cents.greaterThan new Cents(481) # true
+cents.lessThan new Cents(8021) # true
 
 _.sumCents([new Cents(1), new Cents(2)]) # Cents(3)
 
@@ -35,6 +37,15 @@ new Cents(3).times(.5) # will throw
 new Cents(3).times(.5, transform: 'round') # Cents(2)
 new Cents(3).times(.5, transform: 'floor') # Cents(1)
 ```
+
+## Warnings
+
+**Don't use numerical comparison functions, `Cents` instances are objects**
+
+Built-in numerical comparisons (`<`, `>`, `==`, `<=`, `>=`) don't work properly
+on objects. Instead use `lessThan`, `greaterThan`, `equals`, `lessThanOrEqual`,
+or `greaterThanOrEqual`.
+
 
 ## Why?
 

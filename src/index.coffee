@@ -4,6 +4,23 @@ BigNumber = require 'bignumber.js'
 isInt = (maybeInt) -> maybeInt % 1 is 0
 
 module.exports = Cents = class Cents
+  compareCentsFunction = (comparator) ->
+    (val, options = {}) ->
+      cents = @
+      options.strict ?= true
+      if options.strict
+        (val instanceof Cents) and comparator(cents, val)
+      else
+        otherCents = new Cents(val) # wrap first
+        comparator(cents, otherCents)
+
+  comparators =
+    equals:             (cents, otherCents) -> cents.toNumber() is otherCents.toNumber()
+    lessThan:           (cents, otherCents) -> cents.toNumber() < otherCents.toNumber()
+    lessThanOrEqual:    (cents, otherCents) -> cents.toNumber() <= otherCents.toNumber()
+    greaterThan:        (cents, otherCents) -> cents.toNumber() > otherCents.toNumber()
+    greaterThanOrEqual: (cents, otherCents) -> cents.toNumber() >= otherCents.toNumber()
+
   constructor: (@value) ->
     if @value?.toNumber?
       # Could be instanceof BigNumber or Cents.
@@ -52,19 +69,22 @@ module.exports = Cents = class Cents
     scalar = new BigNumber(percent).dividedBy(100).toNumber()
     @times(scalar, {transform})
 
-  equals: (otherCents, {strict} = {strict: true}) ->
-    centsEqual = => @toNumber() is otherCents.toNumber() # assumes otherCents is a Cents
-    if strict
-      (otherCents instanceof Cents) and centsEqual()
-    else
-      otherCents = new Cents(otherCents) # wrap first
-      centsEqual()
+  equals: compareCentsFunction(comparators.equals)
+  lessThan: compareCentsFunction(comparators.lessThan)
+  lessThanOrEqual: compareCentsFunction(comparators.lessThanOrEqual)
+  greaterThan: compareCentsFunction(comparators.greaterThan)
+  greaterThanOrEqual: compareCentsFunction(comparators.greaterThanOrEqual)
 
   # Handy aliases.
   is0: -> @equals(new Cents(0))
   isnt0: -> !@is0()
 
   toString: -> "$#{new BigNumber(@toDollars()).toFixed(2)}" # always show 2 decimal places
+
+Cents::lt = Cents::lessThan
+Cents::lte = Cents::lessThanOrEqual
+Cents::gt = Cents::greaterThan
+Cents::gte = Cents::greaterThanOrEqual
 
 Cents.isValid = (maybeCents) ->
   threw = false

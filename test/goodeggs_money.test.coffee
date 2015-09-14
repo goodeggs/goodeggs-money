@@ -158,6 +158,62 @@ describe 'Cents', ->
       expect((new Cents(0)).isnt0()).to.be.false
       expect((new Cents(1)).isnt0()).to.be.true
 
+  describe '.greaterThan', ->
+    it 'should work if the argument is a Cents object with the smaller value when strict', ->
+      cents = new Cents(5)
+      expect(cents.greaterThan(new Cents(10))).to.be.false
+      expect(cents.greaterThan(new Cents(4))).to.be.true
+      expect(cents.greaterThan(new Cents(5))).to.be.false
+      expect(cents.greaterThan(10)).to.be.false
+      expect(cents.greaterThan(4)).to.be.false
+      expect(cents.greaterThan(5)).to.be.false
+
+    it 'should allow strict mode false', ->
+      expect(new Cents(5).greaterThan(4, strict: false)).to.be.true
+      expect(new Cents(5).greaterThan('4', strict: false)).to.be.true
+
+  describe '.lessThan', ->
+    it 'should work if the argument is a Cents object with the larger value when strict', ->
+      cents = new Cents(5)
+      expect(cents.lessThan(new Cents(10))).to.be.true
+      expect(cents.lessThan(new Cents(4))).to.be.false
+      expect(cents.lessThan(new Cents(5))).to.be.false
+      expect(cents.lessThan(10)).to.be.false
+      expect(cents.lessThan(4)).to.be.false
+      expect(cents.lessThan(5)).to.be.false
+
+    it 'should allow strict mode false', ->
+      expect(new Cents(5).lessThan(10, strict: false)).to.be.true
+      expect(new Cents(5).lessThan('10', strict: false)).to.be.true
+
+  describe '.greaterThanOrEqual', ->
+    it 'should work if the argument is a Cents object with the smaller value when strict', ->
+      cents = new Cents(5)
+      expect(cents.greaterThanOrEqual(new Cents(10))).to.be.false
+      expect(cents.greaterThanOrEqual(new Cents(4))).to.be.true
+      expect(cents.greaterThanOrEqual(new Cents(5))).to.be.true
+      expect(cents.greaterThanOrEqual(10)).to.be.false
+      expect(cents.greaterThanOrEqual(4)).to.be.false
+      expect(cents.greaterThanOrEqual(5)).to.be.false
+
+    it 'should allow strict mode false', ->
+      expect(new Cents(5).greaterThanOrEqual(4, strict: false)).to.be.true
+      expect(new Cents(5).greaterThanOrEqual('4', strict: false)).to.be.true
+
+  describe '.lessThanOrEqual', ->
+    it 'should work if the argument is a Cents object with the larger value when strict', ->
+      cents = new Cents(5)
+      expect(cents.lessThanOrEqual(new Cents(10))).to.be.true
+      expect(cents.lessThanOrEqual(new Cents(4))).to.be.false
+      expect(cents.lessThanOrEqual(new Cents(5))).to.be.true
+      expect(cents.lessThanOrEqual(10)).to.be.false
+      expect(cents.lessThanOrEqual(4)).to.be.false
+      expect(cents.lessThanOrEqual(5)).to.be.false
+
+    it 'should allow strict mode false', ->
+      expect(new Cents(5).lessThanOrEqual(10, strict: false)).to.be.true
+      expect(new Cents(5).lessThanOrEqual('10', strict: false)).to.be.true
+
   describe '.sum', ->
 
     it 'should work with a single value splat', ->
