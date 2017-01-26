@@ -18,10 +18,10 @@
   "homepage": "https://github.com/goodeggs/goodeggs-money",
   "bugs": "https://github.com/goodeggs/goodeggs-money/issues",
   "dependencies": {
-    "bignumber.js": "^2.0.3",
-    "chai": "^2.0.0"
+    "bignumber.js": "^2.0.3"
   },
   "devDependencies": {
+    "chai": "^2.0.0",
     "coffee-script": ">=1.8.x",
     "mocha": "~1.x.x"
   },
