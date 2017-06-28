@@ -18,7 +18,7 @@
   "homepage": "https://github.com/goodeggs/goodeggs-money",
   "bugs": "https://github.com/goodeggs/goodeggs-money/issues",
   "dependencies": {
-    "bignumber.js": "^2.0.3"
+    "bignumber.js": "^4.0.2"
   },
   "devDependencies": {
     "chai": "^2.0.0",
