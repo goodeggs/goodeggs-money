@@ -1,6 +1,6 @@
 {
   "name": "goodeggs-money",
-  "version": "1.8.2",
+  "version": "1.8.7",
   "description": "Reliable money math with BigNumber  wrapped inside Cents",
   "author": "Good Eggs <open-source@goodeggs.com>",
   "contributors": [
@@ -18,12 +18,12 @@
   "homepage": "https://github.com/goodeggs/goodeggs-money",
   "bugs": "https://github.com/goodeggs/goodeggs-money/issues",
   "dependencies": {
-    "bignumber.js": "^4.0.2"
+    "bignumber.js": "^9.0.0"
   },
   "devDependencies": {
-    "chai": "^2.0.0",
+    "chai": "^4.2.0",
     "coffee-script": ">=1.8.x",
-    "mocha": "~1.x.x"
+    "mocha": "^7.1.0"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",

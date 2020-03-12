@@ -1,4 +1,4 @@
-BigNumber = require 'bignumber.js'
+{BigNumber} = require 'bignumber.js'
 
 # http://stackoverflow.com/questions/3885817/how-to-check-if-a-number-is-float-or-integer
 isInt = (maybeInt) -> maybeInt % 1 is 0
@@ -14,6 +14,8 @@ module.exports = Cents = class Cents
         otherCents = new Cents(val) # wrap first
         comparator(cents, otherCents)
 
+  # TODO(serhalp) use built-in BigNumber.js comparator methods? Perhaps these didn't exist
+  # when this was first written...?
   comparators =
     equals:             (cents, otherCents) -> cents.toNumber() is otherCents.toNumber()
     lessThan:           (cents, otherCents) -> cents.toNumber() < otherCents.toNumber()
@@ -53,19 +55,21 @@ module.exports = Cents = class Cents
     # Transform can be any no-arg BigNumber function and should produce a valid Cents value.
     # e.g. 'ceil', 'round'
     result = @toBigNumber().times(scalar)
-    result = result[transform]() if transform?
+    result = @_applyBackwardsCompatibleTransform(result, transform) if transform?
     new Cents(result)
 
   dividedBy: (scalar, {transform} = {}) ->
     # Transform can be any no-arg BigNumber function and should produce a valid Cents value.
     # e.g. 'ceil', 'round'
     result = @toBigNumber().dividedBy(scalar)
-    result = result[transform]() if transform?
+    result = @_applyBackwardsCompatibleTransform(result, transform) if transform?
     new Cents(result)
 
   percent: (percent, {transform} = {transform: 'round'}) ->
     # Is equivalent to @times(percent / 100, {transform})
     # but avoids (percent / 100) returning too many sig figs for BigNumber.
+    # TODO(serhalp) this is no longer an issue since BigNumber.js@7.0.0:
+    # https://github.com/MikeMcl/bignumber.js/blob/master/CHANGELOG.md#700. Simplify?
     scalar = new BigNumber(percent).dividedBy(100).toNumber()
     @times(scalar, {transform})
 
@@ -80,6 +84,22 @@ module.exports = Cents = class Cents
   isnt0: -> !@is0()
 
   toString: -> "$#{new BigNumber(@toDollars()).toFixed(2)}" # always show 2 decimal places
+
+  # BigNumber.js removed `round()`, `ceil()`, and `floor()` in in v6.0.0. Previously this library
+  # allowed magically calling through to underlying BigNumber.js methods. This is a shim to
+  # continue to transparently continue to support the frequently used `round` "transform" without
+  # breaking backwards compatibility.
+  _applyBackwardsCompatibleTransform: (bigNumber, transform) ->
+    if transform is 'round'
+      return bigNumber.integerValue(BigNumber.ROUND_HALF_UP)
+    else if transform is 'floor'
+      return bigNumber.integerValue(BigNumber.ROUND_FLOOR)
+    else if transform is 'ceil'
+      return bigNumber.integerValue(BigNumber.ROUND_CEIL)
+    else if typeof bigNumber[transform] isnt 'function'
+      throw new TypeError("Cannot apply transform '#{transform}', is not a supported BigNumber.js method")
+    else
+      return bigNumber[transform]()
 
 Cents::lt = Cents::lessThan
 Cents::lte = Cents::lessThanOrEqual
@@ -108,7 +128,7 @@ Cents.fromDollars = (dollars) ->
 
 Cents.round = (maybeInt) ->
   throw new Error "#{maybeInt} must be positive to round to cents" unless maybeInt >= 0
-  new Cents(new BigNumber(maybeInt).round())
+  new Cents(new BigNumber(maybeInt).integerValue(BigNumber.ROUND_HALF_UP))
 
 # This method supports static method calls of the form:
 #   Cents.staticMethod(...)
