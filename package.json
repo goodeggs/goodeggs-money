@@ -21,9 +21,9 @@
     "bignumber.js": "^4.0.2"
   },
   "devDependencies": {
-    "chai": "^2.0.0",
+    "chai": "^4.2.0",
     "coffee-script": ">=1.8.x",
-    "mocha": "~1.x.x"
+    "mocha": "^7.1.0"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
