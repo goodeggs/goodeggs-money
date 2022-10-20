@@ -283,14 +283,14 @@ const arrayifySplat = function (splat, validator) {
 Cents.min = function (...cents) {
   cents = arrayifySplat(cents, Cents.isValid);
   cents = cents.map((cent) => new Cents(cent).toNumber());
-  const min = Math.min(...Array.from(cents || []));
+  const min = Math.min(...cents);
   return new Cents(min);
 };
 
 Cents.max = function (...cents) {
   cents = arrayifySplat(cents, Cents.isValid);
   cents = cents.map((cent) => new Cents(cent).toNumber());
-  const max = Math.max(...Array.from(cents || []));
+  const max = Math.max(...cents);
   return new Cents(max);
 };
 
