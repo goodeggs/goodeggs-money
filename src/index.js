@@ -1,205 +1,185 @@
-let Cents;
 const { BigNumber } = require("bignumber.js");
 
 // http://stackoverflow.com/questions/3885817/how-to-check-if-a-number-is-float-or-integer
 const isInt = (maybeInt) => maybeInt % 1 === 0;
 
-module.exports =
-  Cents =
-  Cents =
-    (function () {
-      let compareCentsFunction = undefined;
-      let comparators = undefined;
-      Cents = class Cents {
-        static initClass() {
-          compareCentsFunction = (comparator) =>
-            function (val, options) {
-              if (options == null) {
-                options = {};
-              }
-              const cents = this;
-              if (options.strict == null) {
-                options.strict = true;
-              }
-              if (options.strict) {
-                return val instanceof Cents && comparator(cents, val);
-              } else {
-                const otherCents = new Cents(val); // wrap first
-                return comparator(cents, otherCents);
-              }
-            };
+const compareCentsFunction = (comparator) =>
+  function (val, options) {
+    if (options == null) {
+      options = {};
+    }
+    const cents = this;
+    if (options.strict == null) {
+      options.strict = true;
+    }
+    if (options.strict) {
+      return val instanceof Cents && comparator(cents, val);
+    } else {
+      const otherCents = new Cents(val); // wrap first
+      return comparator(cents, otherCents);
+    }
+  };
 
-          // TODO(serhalp) use built-in BigNumber.js comparator methods? Perhaps these didn't exist
-          // when this was first written...?
-          comparators = {
-            equals(cents, otherCents) {
-              return cents.toNumber() === otherCents.toNumber();
-            },
-            lessThan(cents, otherCents) {
-              return cents.toNumber() < otherCents.toNumber();
-            },
-            lessThanOrEqual(cents, otherCents) {
-              return cents.toNumber() <= otherCents.toNumber();
-            },
-            greaterThan(cents, otherCents) {
-              return cents.toNumber() > otherCents.toNumber();
-            },
-            greaterThanOrEqual(cents, otherCents) {
-              return cents.toNumber() >= otherCents.toNumber();
-            },
-          };
+const comparators = {
+  equals(cents, otherCents) {
+    return cents.toNumber() === otherCents.toNumber();
+  },
+  lessThan(cents, otherCents) {
+    return cents.toNumber() < otherCents.toNumber();
+  },
+  lessThanOrEqual(cents, otherCents) {
+    return cents.toNumber() <= otherCents.toNumber();
+  },
+  greaterThan(cents, otherCents) {
+    return cents.toNumber() > otherCents.toNumber();
+  },
+  greaterThanOrEqual(cents, otherCents) {
+    return cents.toNumber() >= otherCents.toNumber();
+  },
+};
+class Cents {
+  constructor(value) {
+    this.equals = compareCentsFunction(comparators.equals);
+    this.lessThan = compareCentsFunction(comparators.lessThan);
+    this.lessThanOrEqual = compareCentsFunction(comparators.lessThanOrEqual);
+    this.greaterThan = compareCentsFunction(comparators.greaterThan);
+    this.greaterThanOrEqual = compareCentsFunction(
+      comparators.greaterThanOrEqual
+    );
+    this.value = value;
+    if ((this.value != null ? this.value.toNumber : undefined) != null) {
+      // Could be instanceof BigNumber or Cents.
+      this.value = this.value.toNumber();
+    }
 
-          this.prototype.equals = compareCentsFunction(comparators.equals);
-          this.prototype.lessThan = compareCentsFunction(comparators.lessThan);
-          this.prototype.lessThanOrEqual = compareCentsFunction(
-            comparators.lessThanOrEqual
-          );
-          this.prototype.greaterThan = compareCentsFunction(
-            comparators.greaterThan
-          );
-          this.prototype.greaterThanOrEqual = compareCentsFunction(
-            comparators.greaterThanOrEqual
-          );
-        }
+    if (typeof this.value === "string") {
+      this.value = Number(this.value);
+    }
+    if (typeof this.value !== "number") {
+      throw new Error(`${this.value} must be a Number`);
+    }
+    if (isNaN(this.value)) {
+      throw new Error(`${this.value} must not be NaN`);
+    }
+    if (!isInt(this.value)) {
+      throw new Error(`${this.value} must be an int`);
+    }
+    if (this.value < 0) {
+      throw new Error(`${this.value} must not be negative`);
+    }
+  }
 
-        constructor(value) {
-          this.value = value;
-          if ((this.value != null ? this.value.toNumber : undefined) != null) {
-            // Could be instanceof BigNumber or Cents.
-            this.value = this.value.toNumber();
-          }
+  toBigNumber() {
+    return new BigNumber(this.value);
+  }
+  toDollars() {
+    return this.toBigNumber().dividedBy(100).toNumber();
+  }
+  toNumber() {
+    return this.value;
+  }
 
-          if (typeof this.value === "string") {
-            this.value = Number(this.value);
-          }
-          if (typeof this.value !== "number") {
-            throw new Error(`${this.value} must be a Number`);
-          }
-          if (isNaN(this.value)) {
-            throw new Error(`${this.value} must not be NaN`);
-          }
-          if (!isInt(this.value)) {
-            throw new Error(`${this.value} must be an int`);
-          }
-          if (this.value < 0) {
-            throw new Error(`${this.value} must not be negative`);
-          }
-        }
+  plus(cents, param) {
+    if (param == null) {
+      param = { strict: false };
+    }
+    const { strict } = param;
+    if (!strict) {
+      cents = new Cents(cents);
+    }
+    return new Cents(this.toBigNumber().plus(cents.toNumber()));
+  }
 
-        toBigNumber() {
-          return new BigNumber(this.value);
-        }
-        toDollars() {
-          return this.toBigNumber().dividedBy(100).toNumber();
-        }
-        toNumber() {
-          return this.value;
-        }
+  minus(cents, param) {
+    if (param == null) {
+      param = { strict: false, maxZero: false };
+    }
+    const { strict, maxZero } = param;
+    if (!strict) {
+      cents = new Cents(cents);
+    }
+    const result = this.toBigNumber().minus(cents.toNumber()).toNumber(); // Number; may be negative
 
-        plus(cents, param) {
-          if (param == null) {
-            param = { strict: false };
-          }
-          const { strict } = param;
-          if (!strict) {
-            cents = new Cents(cents);
-          }
-          return new Cents(this.toBigNumber().plus(cents.toNumber()));
-        }
+    if (maxZero) {
+      return new Cents(Math.max(0, result));
+    } else {
+      return new Cents(result); // will throw if negative
+    }
+  }
 
-        minus(cents, param) {
-          if (param == null) {
-            param = { strict: false, maxZero: false };
-          }
-          const { strict, maxZero } = param;
-          if (!strict) {
-            cents = new Cents(cents);
-          }
-          const result = this.toBigNumber().minus(cents.toNumber()).toNumber(); // Number; may be negative
+  times(scalar, param) {
+    // Transform can be any no-arg BigNumber function and should produce a valid Cents value.
+    // e.g. 'ceil', 'round'
+    if (param == null) {
+      param = {};
+    }
+    const { transform } = param;
+    let result = this.toBigNumber().times(scalar);
+    if (transform != null) {
+      result = this._applyBackwardsCompatibleTransform(result, transform);
+    }
+    return new Cents(result);
+  }
 
-          if (maxZero) {
-            return new Cents(Math.max(0, result));
-          } else {
-            return new Cents(result); // will throw if negative
-          }
-        }
+  dividedBy(scalar, param) {
+    // Transform can be any no-arg BigNumber function and should produce a valid Cents value.
+    // e.g. 'ceil', 'round'
+    if (param == null) {
+      param = {};
+    }
+    const { transform } = param;
+    let result = this.toBigNumber().dividedBy(scalar);
+    if (transform != null) {
+      result = this._applyBackwardsCompatibleTransform(result, transform);
+    }
+    return new Cents(result);
+  }
 
-        times(scalar, param) {
-          // Transform can be any no-arg BigNumber function and should produce a valid Cents value.
-          // e.g. 'ceil', 'round'
-          if (param == null) {
-            param = {};
-          }
-          const { transform } = param;
-          let result = this.toBigNumber().times(scalar);
-          if (transform != null) {
-            result = this._applyBackwardsCompatibleTransform(result, transform);
-          }
-          return new Cents(result);
-        }
+  percent(percent, param) {
+    // Is equivalent to @times(percent / 100, {transform})
+    // but avoids (percent / 100) returning too many sig figs for BigNumber.
+    // TODO(serhalp) this is no longer an issue since BigNumber.js@7.0.0:
+    // https://github.com/MikeMcl/bignumber.js/blob/master/CHANGELOG.md#700. Simplify?
+    if (param == null) {
+      param = { transform: "round" };
+    }
+    const { transform } = param;
+    const scalar = new BigNumber(percent).dividedBy(100).toNumber();
+    return this.times(scalar, { transform });
+  }
 
-        dividedBy(scalar, param) {
-          // Transform can be any no-arg BigNumber function and should produce a valid Cents value.
-          // e.g. 'ceil', 'round'
-          if (param == null) {
-            param = {};
-          }
-          const { transform } = param;
-          let result = this.toBigNumber().dividedBy(scalar);
-          if (transform != null) {
-            result = this._applyBackwardsCompatibleTransform(result, transform);
-          }
-          return new Cents(result);
-        }
+  // Handy aliases.
+  is0() {
+    return this.equals(new Cents(0));
+  }
+  isnt0() {
+    return !this.is0();
+  }
 
-        percent(percent, param) {
-          // Is equivalent to @times(percent / 100, {transform})
-          // but avoids (percent / 100) returning too many sig figs for BigNumber.
-          // TODO(serhalp) this is no longer an issue since BigNumber.js@7.0.0:
-          // https://github.com/MikeMcl/bignumber.js/blob/master/CHANGELOG.md#700. Simplify?
-          if (param == null) {
-            param = { transform: "round" };
-          }
-          const { transform } = param;
-          const scalar = new BigNumber(percent).dividedBy(100).toNumber();
-          return this.times(scalar, { transform });
-        }
+  toString() {
+    return `$${new BigNumber(this.toDollars()).toFixed(2)}`;
+  } // always show 2 decimal places
 
-        // Handy aliases.
-        is0() {
-          return this.equals(new Cents(0));
-        }
-        isnt0() {
-          return !this.is0();
-        }
-
-        toString() {
-          return `$${new BigNumber(this.toDollars()).toFixed(2)}`;
-        } // always show 2 decimal places
-
-        // BigNumber.js removed `round()`, `ceil()`, and `floor()` in in v6.0.0. Previously this library
-        // allowed magically calling through to underlying BigNumber.js methods. This is a shim to
-        // continue to transparently continue to support the frequently used `round` "transform" without
-        // breaking backwards compatibility.
-        _applyBackwardsCompatibleTransform(bigNumber, transform) {
-          if (transform === "round") {
-            return bigNumber.integerValue(BigNumber.ROUND_HALF_UP);
-          } else if (transform === "floor") {
-            return bigNumber.integerValue(BigNumber.ROUND_FLOOR);
-          } else if (transform === "ceil") {
-            return bigNumber.integerValue(BigNumber.ROUND_CEIL);
-          } else if (typeof bigNumber[transform] !== "function") {
-            throw new TypeError(
-              `Cannot apply transform '${transform}', is not a supported BigNumber.js method`
-            );
-          } else {
-            return bigNumber[transform]();
-          }
-        }
-      };
-      Cents.initClass();
-      return Cents;
-    })();
+  // BigNumber.js removed `round()`, `ceil()`, and `floor()` in in v6.0.0. Previously this library
+  // allowed magically calling through to underlying BigNumber.js methods. This is a shim to
+  // continue to transparently continue to support the frequently used `round` "transform" without
+  // breaking backwards compatibility.
+  _applyBackwardsCompatibleTransform(bigNumber, transform) {
+    if (transform === "round") {
+      return bigNumber.integerValue(BigNumber.ROUND_HALF_UP);
+    } else if (transform === "floor") {
+      return bigNumber.integerValue(BigNumber.ROUND_FLOOR);
+    } else if (transform === "ceil") {
+      return bigNumber.integerValue(BigNumber.ROUND_CEIL);
+    } else if (typeof bigNumber[transform] !== "function") {
+      throw new TypeError(
+        `Cannot apply transform '${transform}', is not a supported BigNumber.js method`
+      );
+    } else {
+      return bigNumber[transform]();
+    }
+  }
+}
 
 Cents.prototype.lt = Cents.prototype.lessThan;
 Cents.prototype.lte = Cents.prototype.lessThanOrEqual;
@@ -298,3 +278,5 @@ Cents.sumDollars = function (...dollars) {
     new Cents(0)
   );
 };
+
+module.exports = Cents;
