@@ -21,6 +21,14 @@
     "bignumber.js": "^9.0.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.6",
+    "@babel/polyfill": "^7.12.1",
+    "@babel/preset-env": "^7.19.4",
+    "@babel/preset-typescript": "^7.18.6",
+    "@babel/register": "^7.18.9",
+    "@goodeggs/toolkit": "^7.0.1",
+    "@goodeggs/tsconfig": "^2.0.2",
     "chai": "^4.2.0",
     "mocha": "^7.1.0"
   },
@@ -29,6 +37,10 @@
     "always-auth": true
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "lint": "yarn run lint:es",
+    "lint:es": "getk run lint-es",
+    "lint:fix": "yarn run lint:fix:es",
+    "lint:fix:es": "getk run fix-es"
   }
 }
