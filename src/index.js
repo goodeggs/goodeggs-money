@@ -1,4 +1,6 @@
-const { BigNumber } = require("bignumber.js");
+/* eslint-disable no-use-before-define */
+// eslint-disable-next-line import/no-commonjs
+const {BigNumber} = require('bignumber.js');
 
 // http://stackoverflow.com/questions/3885817/how-to-check-if-a-number-is-float-or-integer
 const isInt = (maybeInt) => maybeInt % 1 === 0;
@@ -14,10 +16,9 @@ const compareCentsFunction = (comparator) =>
     }
     if (options.strict) {
       return val instanceof Cents && comparator(cents, val);
-    } else {
-      const otherCents = new Cents(val); // wrap first
-      return comparator(cents, otherCents);
     }
+    const otherCents = new Cents(val);
+    return comparator(cents, otherCents);
   };
 
 const comparators = {
@@ -43,19 +44,17 @@ class Cents {
     this.lessThan = compareCentsFunction(comparators.lessThan);
     this.lessThanOrEqual = compareCentsFunction(comparators.lessThanOrEqual);
     this.greaterThan = compareCentsFunction(comparators.greaterThan);
-    this.greaterThanOrEqual = compareCentsFunction(
-      comparators.greaterThanOrEqual
-    );
+    this.greaterThanOrEqual = compareCentsFunction(comparators.greaterThanOrEqual);
     this.value = value;
     if ((this.value != null ? this.value.toNumber : undefined) != null) {
       // Could be instanceof BigNumber or Cents.
       this.value = this.value.toNumber();
     }
 
-    if (typeof this.value === "string") {
+    if (typeof this.value === 'string') {
       this.value = Number(this.value);
     }
-    if (typeof this.value !== "number") {
+    if (typeof this.value !== 'number') {
       throw new Error(`${this.value} must be a Number`);
     }
     if (isNaN(this.value)) {
@@ -81,9 +80,9 @@ class Cents {
 
   plus(cents, param) {
     if (param == null) {
-      param = { strict: false };
+      param = {strict: false};
     }
-    const { strict } = param;
+    const {strict} = param;
     if (!strict) {
       cents = new Cents(cents);
     }
@@ -92,9 +91,9 @@ class Cents {
 
   minus(cents, param) {
     if (param == null) {
-      param = { strict: false, maxZero: false };
+      param = {strict: false, maxZero: false};
     }
-    const { strict, maxZero } = param;
+    const {strict, maxZero} = param;
     if (!strict) {
       cents = new Cents(cents);
     }
@@ -102,9 +101,8 @@ class Cents {
 
     if (maxZero) {
       return new Cents(Math.max(0, result));
-    } else {
-      return new Cents(result); // will throw if negative
     }
+    return new Cents(result); // will throw if negative
   }
 
   times(scalar, param) {
@@ -113,7 +111,7 @@ class Cents {
     if (param == null) {
       param = {};
     }
-    const { transform } = param;
+    const {transform} = param;
     let result = this.toBigNumber().times(scalar);
     if (transform != null) {
       result = this._applyBackwardsCompatibleTransform(result, transform);
@@ -127,7 +125,7 @@ class Cents {
     if (param == null) {
       param = {};
     }
-    const { transform } = param;
+    const {transform} = param;
     let result = this.toBigNumber().dividedBy(scalar);
     if (transform != null) {
       result = this._applyBackwardsCompatibleTransform(result, transform);
@@ -141,11 +139,11 @@ class Cents {
     // TODO(serhalp) this is no longer an issue since BigNumber.js@7.0.0:
     // https://github.com/MikeMcl/bignumber.js/blob/master/CHANGELOG.md#700. Simplify?
     if (param == null) {
-      param = { transform: "round" };
+      param = {transform: 'round'};
     }
-    const { transform } = param;
+    const {transform} = param;
     const scalar = new BigNumber(percent).dividedBy(100).toNumber();
-    return this.times(scalar, { transform });
+    return this.times(scalar, {transform});
   }
 
   // Handy aliases.
@@ -165,15 +163,15 @@ class Cents {
   // continue to transparently continue to support the frequently used `round` "transform" without
   // breaking backwards compatibility.
   _applyBackwardsCompatibleTransform(bigNumber, transform) {
-    if (transform === "round") {
+    if (transform === 'round') {
       return bigNumber.integerValue(BigNumber.ROUND_HALF_UP);
-    } else if (transform === "floor") {
+    } else if (transform === 'floor') {
       return bigNumber.integerValue(BigNumber.ROUND_FLOOR);
-    } else if (transform === "ceil") {
+    } else if (transform === 'ceil') {
       return bigNumber.integerValue(BigNumber.ROUND_CEIL);
-    } else if (typeof bigNumber[transform] !== "function") {
+    } else if (typeof bigNumber[transform] !== 'function') {
       throw new TypeError(
-        `Cannot apply transform '${transform}', is not a supported BigNumber.js method`
+        `Cannot apply transform '${transform}', is not a supported BigNumber.js method`,
       );
     } else {
       return bigNumber[transform]();
@@ -187,36 +185,34 @@ Cents.prototype.gt = Cents.prototype.greaterThan;
 Cents.prototype.gte = Cents.prototype.greaterThanOrEqual;
 
 Cents.isValid = function (maybeCents) {
-  let threw = false;
+  let centsInstance;
   try {
-    new Cents(maybeCents);
-  } catch (error) {
-    threw = true;
+    centsInstance = new Cents(maybeCents);
+  } catch {
+    centsInstance = new Error('invalid');
   }
-  return !threw;
+  return centsInstance instanceof Cents;
 };
 
 Cents.isValidDollars = function (maybeDollars) {
   let threw = false;
   try {
     Cents.fromDollars(maybeDollars);
-  } catch (error) {
+  } catch {
     threw = true;
   }
   return !threw;
 };
 
 Cents.fromDollars = (
-  dollars // dollars should be a Number like xx.yy
+  dollars, // dollars should be a Number like xx.yy
 ) => new Cents(new BigNumber(dollars).times(100));
 
 Cents.round = function (maybeInt) {
   if (!(maybeInt >= 0)) {
     throw new Error(`${maybeInt} must be positive to round to cents`);
   }
-  return new Cents(
-    new BigNumber(maybeInt).integerValue(BigNumber.ROUND_HALF_UP)
-  );
+  return new Cents(new BigNumber(maybeInt).integerValue(BigNumber.ROUND_HALF_UP));
 };
 
 // This method supports static method calls of the form:
@@ -231,12 +227,12 @@ Cents.round = function (maybeInt) {
 //   Each value must "pass" the validator predicate function. Returns an array of the values.
 const arrayifySplat = function (splat, validator) {
   if (!(splat.length > 0)) {
-    throw new Error("Expect at least one argument");
+    throw new Error('Expect at least one argument');
   }
 
   if (Array.isArray(splat[0])) {
     if (splat.length !== 1) {
-      throw new Error("Expect a single array argument");
+      throw new Error('Expect a single array argument');
     }
     splat = splat[0];
   }
@@ -273,10 +269,8 @@ Cents.sum = function (...cents) {
 
 Cents.sumDollars = function (...dollars) {
   dollars = arrayifySplat(dollars, Cents.isValidDollars);
-  return dollars.reduce(
-    (memo, val) => memo.plus(Cents.fromDollars(val)),
-    new Cents(0)
-  );
+  return dollars.reduce((memo, val) => memo.plus(Cents.fromDollars(val)), new Cents(0));
 };
 
+// eslint-disable-next-line import/no-commonjs
 module.exports = Cents;
