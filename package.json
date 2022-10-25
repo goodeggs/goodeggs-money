@@ -37,7 +37,8 @@
     "always-auth": true
   },
   "scripts": {
-    "test": "mocha",
+    "test": "yarn run lint && yarn run test:unit",
+    "test:unit": "mocha",
     "lint": "yarn run lint:es",
     "lint:es": "getk run lint-es",
     "lint:fix": "yarn run lint:fix:es",
