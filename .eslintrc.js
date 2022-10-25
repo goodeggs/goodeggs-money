@@ -1,11 +1,8 @@
 module.exports = {
   root: true,
-  extends: ['plugin:goodeggs/recommended', 'plugin:goodeggs/ops'],
+  extends: ['plugin:goodeggs/recommended'],
   env: {
     node: true,
-  },
-  rules: {
-    camelcase: 'off',
   },
   overrides: [
     {
