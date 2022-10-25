@@ -37,6 +37,9 @@
     "always-auth": true
   },
   "scripts": {
+    "prepublishOnly": "yarn run clean && yarn run build",
+    "build": "babel --extensions .ts,.js --source-maps --ignore 'src/*.test.ts' --out-dir lib/ src/",
+    "clean": "rm -rf lib",
     "test": "yarn run lint && yarn run test:unit",
     "test:unit": "mocha",
     "lint": "yarn run lint:es",
