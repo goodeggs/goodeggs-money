@@ -225,7 +225,7 @@ class Cents {
     return Reflect.apply(this.greaterThanOrEqual, this, [...args]);
   }
 
-  static isValid = function (maybeCents) {
+  static isValid(maybeCents) {
     let centsInstance;
     try {
       centsInstance = new Cents(maybeCents);
@@ -233,9 +233,9 @@ class Cents {
       centsInstance = new Error('invalid');
     }
     return centsInstance instanceof Cents;
-  };
+  }
 
-  static isValidDollars = function (maybeDollars) {
+  static isValidDollars(maybeDollars) {
     let threw = false;
     try {
       Cents.fromDollars(maybeDollars);
@@ -243,42 +243,42 @@ class Cents {
       threw = true;
     }
     return !threw;
-  };
+  }
 
   static fromDollars = (
     dollars, // dollars should be a Number like xx.yy
   ) => new Cents(new BigNumber(dollars).times(100));
 
-  static round = function (maybeInt) {
+  static round(maybeInt) {
     if (!(maybeInt >= 0)) {
       throw new Error(`${maybeInt} must be positive to round to cents`);
     }
     return new Cents(new BigNumber(maybeInt).integerValue(BigNumber.ROUND_HALF_UP));
-  };
+  }
 
-  static min = function (...cents) {
+  static min(...cents) {
     cents = arrayifySplat(cents, Cents.isValid);
     cents = cents.map((cent) => new Cents(cent).toNumber());
     const min = Math.min(...cents);
     return new Cents(min);
-  };
+  }
 
-  static max = function (...cents) {
+  static max(...cents) {
     cents = arrayifySplat(cents, Cents.isValid);
     cents = cents.map((cent) => new Cents(cent).toNumber());
     const max = Math.max(...cents);
     return new Cents(max);
-  };
+  }
 
-  static sum = function (...cents) {
+  static sum(...cents) {
     cents = arrayifySplat(cents, Cents.isValid);
     return cents.reduce((memo, val) => memo.plus(val), new Cents(0));
-  };
+  }
 
-  static sumDollars = function (...dollars) {
+  static sumDollars(...dollars) {
     dollars = arrayifySplat(dollars, Cents.isValidDollars);
     return dollars.reduce((memo, val) => memo.plus(Cents.fromDollars(val)), new Cents(0));
-  };
+  }
 }
 
 export default Cents;
