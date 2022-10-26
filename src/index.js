@@ -1,11 +1,10 @@
-/* eslint-disable no-use-before-define */
 // eslint-disable-next-line import/no-commonjs
 const {BigNumber} = require('bignumber.js');
 
 // http://stackoverflow.com/questions/3885817/how-to-check-if-a-number-is-float-or-integer
 const isInt = (maybeInt) => maybeInt % 1 === 0;
 
-const compareCentsFunction = (comparator) =>
+const compareCentsFunction = (comparator, Class) =>
   function (val, options) {
     if (options == null) {
       options = {};
@@ -15,9 +14,9 @@ const compareCentsFunction = (comparator) =>
       options.strict = true;
     }
     if (options.strict) {
-      return val instanceof Cents && comparator(cents, val);
+      return val instanceof Class && comparator(cents, val);
     }
-    const otherCents = new Cents(val);
+    const otherCents = new Class(val);
     return comparator(cents, otherCents);
   };
 
@@ -73,11 +72,11 @@ const arrayifySplat = function (splat, validator) {
 };
 class Cents {
   constructor(value) {
-    this.equals = compareCentsFunction(comparators.equals);
-    this.lessThan = compareCentsFunction(comparators.lessThan);
-    this.lessThanOrEqual = compareCentsFunction(comparators.lessThanOrEqual);
-    this.greaterThan = compareCentsFunction(comparators.greaterThan);
-    this.greaterThanOrEqual = compareCentsFunction(comparators.greaterThanOrEqual);
+    this.equals = compareCentsFunction(comparators.equals, Cents);
+    this.lessThan = compareCentsFunction(comparators.lessThan, Cents);
+    this.lessThanOrEqual = compareCentsFunction(comparators.lessThanOrEqual, Cents);
+    this.greaterThan = compareCentsFunction(comparators.greaterThan, Cents);
+    this.greaterThanOrEqual = compareCentsFunction(comparators.greaterThanOrEqual, Cents);
     this.value = value;
     if ((this.value != null ? this.value.toNumber : undefined) != null) {
       // Could be instanceof BigNumber or Cents.
