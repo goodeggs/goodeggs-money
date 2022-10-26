@@ -6,24 +6,24 @@ import Cents from '../src';
 
 const {fromDollars, isValid, max, min, round, isValidDollars, sum, sumDollars} = Cents;
 
-describe('Cents', function () {
-  describe('constructor', function () {
-    it('can construct with int', function () {
+describe('Cents', () => {
+  describe('constructor', () => {
+    it('can construct with int', () => {
       const cents = new Cents(1);
       expect(cents).to.have.property('value', 1);
     });
 
-    it('can construct with string', function () {
+    it('can construct with string', () => {
       const cents = new Cents('1');
       expect(cents).to.have.property('value', 1);
     });
 
-    it('can construct with BigNumber', function () {
+    it('can construct with BigNumber', () => {
       const cents = new Cents(new BigNumber(1));
       expect(cents).to.have.property('value', 1);
     });
 
-    it('can construct with Cents', function () {
+    it('can construct with Cents', () => {
       const cents = new Cents(new Cents(1));
       expect(cents).to.have.property('value', 1);
     });
@@ -37,7 +37,7 @@ describe('Cents', function () {
     it('throws if constructed with negative int', () => expect(() => new Cents(-1)).to.throw());
   });
 
-  describe('.fromDollars', function () {
+  describe('.fromDollars', () => {
     it('can convert zero dollars', () => expect(fromDollars(0)).to.have.property('value', 0));
 
     it('can convert non-zero dollars', () =>
@@ -47,7 +47,7 @@ describe('Cents', function () {
       expect(() => fromDollars(1.000001)).to.throw());
   });
 
-  describe('.max', function () {
+  describe('.max', () => {
     it('throws if not provided at least one value', () => expect(() => max()).to.throw());
 
     it('throws if provided an empty array', () => expect(() => max([])).to.throw());
@@ -65,7 +65,7 @@ describe('Cents', function () {
     it('works with a non-empty array', () => expect(max([1, 2, 3])).to.have.property('value', 3));
   });
 
-  describe('.min', function () {
+  describe('.min', () => {
     it('throws if not provided at least one value', () => expect(() => min()).to.throw());
 
     it('throws if provided an empty array', () => expect(() => min([])).to.throw());
@@ -83,7 +83,7 @@ describe('Cents', function () {
     it('works with a non-empty array', () => expect(min([1, 2, 3])).to.have.property('value', 1));
   });
 
-  describe('.round', function () {
+  describe('.round', () => {
     it('rounds down', () => expect(round(0.4999)).to.have.property('value', 0));
 
     it('rounds up', () => expect(round(0.5)).to.have.property('value', 1));
@@ -93,7 +93,7 @@ describe('Cents', function () {
     it('throws if given a negative number', () => expect(() => round(-0.1)).to.throw());
   });
 
-  describe('.isValid', function () {
+  describe('.isValid', () => {
     it('is valid for Cents', () => expect(isValid(new Cents(1))).to.be.true);
 
     it('is valid for int string', () => expect(isValid('1')).to.be.true);
@@ -107,7 +107,7 @@ describe('Cents', function () {
     it('is invalid for float', () => expect(isValid(1.5)).to.be.false);
   });
 
-  describe('.isValidDollars', function () {
+  describe('.isValidDollars', () => {
     it('is valid for dollar float', () => expect(isValidDollars(33.44)).to.be.true);
 
     it('is invalid for non-dollar float', () => expect(isValidDollars(33.444)).to.be.false);
@@ -117,31 +117,31 @@ describe('Cents', function () {
     it('is invalid for a non-dollar string', () => expect(isValidDollars('33.444')).to.be.false);
   });
 
-  describe('.equals', function () {
-    it('should be true if the argument is a Cents object with the same value when strict', function () {
+  describe('.equals', () => {
+    it('should be true if the argument is a Cents object with the same value when strict', () => {
       const cents = new Cents(5);
       expect(cents.equals(new Cents(5))).to.be.true;
       expect(cents.equals(5)).to.be.false;
     });
 
-    it('should allow strict mode false', function () {
+    it('should allow strict mode false', () => {
       expect(new Cents(5).equals(5, {strict: false})).to.be.true;
       expect(new Cents(5).equals('5', {strict: false})).to.be.true;
     });
 
-    it('should have an is0() alias', function () {
+    it('should have an is0() alias', () => {
       expect(new Cents(0).is0()).to.be.true;
       expect(new Cents(1).is0()).to.be.false;
     });
 
-    it('should have an isnt0() alias', function () {
+    it('should have an isnt0() alias', () => {
       expect(new Cents(0).isnt0()).to.be.false;
       expect(new Cents(1).isnt0()).to.be.true;
     });
   });
 
-  describe('.greaterThan', function () {
-    it('should work if the argument is a Cents object with the smaller value when strict', function () {
+  describe('.greaterThan', () => {
+    it('should work if the argument is a Cents object with the smaller value when strict', () => {
       const cents = new Cents(5);
       expect(cents.greaterThan(new Cents(10))).to.be.false;
       expect(cents.greaterThan(new Cents(4))).to.be.true;
@@ -151,14 +151,14 @@ describe('Cents', function () {
       expect(cents.greaterThan(5)).to.be.false;
     });
 
-    it('should allow strict mode false', function () {
+    it('should allow strict mode false', () => {
       expect(new Cents(5).greaterThan(4, {strict: false})).to.be.true;
       expect(new Cents(5).greaterThan('4', {strict: false})).to.be.true;
     });
   });
 
-  describe('.gt', function () {
-    it('should work if the argument is a Cents object with the smaller value when strict', function () {
+  describe('.gt', () => {
+    it('should work if the argument is a Cents object with the smaller value when strict', () => {
       const cents = new Cents(5);
       expect(cents.gt(new Cents(10))).to.be.false;
       expect(cents.gt(new Cents(4))).to.be.true;
@@ -168,14 +168,14 @@ describe('Cents', function () {
       expect(cents.gt(5)).to.be.false;
     });
 
-    it('should allow strict mode false', function () {
+    it('should allow strict mode false', () => {
       expect(new Cents(5).gt(4, {strict: false})).to.be.true;
       expect(new Cents(5).gt('4', {strict: false})).to.be.true;
     });
   });
 
-  describe('.lessThan', function () {
-    it('should work if the argument is a Cents object with the larger value when strict', function () {
+  describe('.lessThan', () => {
+    it('should work if the argument is a Cents object with the larger value when strict', () => {
       const cents = new Cents(5);
       expect(cents.lessThan(new Cents(10))).to.be.true;
       expect(cents.lessThan(new Cents(4))).to.be.false;
@@ -185,14 +185,14 @@ describe('Cents', function () {
       expect(cents.lessThan(5)).to.be.false;
     });
 
-    it('should allow strict mode false', function () {
+    it('should allow strict mode false', () => {
       expect(new Cents(5).lessThan(10, {strict: false})).to.be.true;
       expect(new Cents(5).lessThan('10', {strict: false})).to.be.true;
     });
   });
 
-  describe('.lt', function () {
-    it('should work if the argument is a Cents object with the larger value when strict', function () {
+  describe('.lt', () => {
+    it('should work if the argument is a Cents object with the larger value when strict', () => {
       const cents = new Cents(5);
       expect(cents.lt(new Cents(10))).to.be.true;
       expect(cents.lt(new Cents(4))).to.be.false;
@@ -202,14 +202,14 @@ describe('Cents', function () {
       expect(cents.lt(5)).to.be.false;
     });
 
-    it('should allow strict mode false', function () {
+    it('should allow strict mode false', () => {
       expect(new Cents(5).lt(10, {strict: false})).to.be.true;
       expect(new Cents(5).lt('10', {strict: false})).to.be.true;
     });
   });
 
-  describe('.greaterThanOrEqual', function () {
-    it('should work if the argument is a Cents object with the smaller value when strict', function () {
+  describe('.greaterThanOrEqual', () => {
+    it('should work if the argument is a Cents object with the smaller value when strict', () => {
       const cents = new Cents(5);
       expect(cents.greaterThanOrEqual(new Cents(10))).to.be.false;
       expect(cents.greaterThanOrEqual(new Cents(4))).to.be.true;
@@ -219,14 +219,14 @@ describe('Cents', function () {
       expect(cents.greaterThanOrEqual(5)).to.be.false;
     });
 
-    it('should allow strict mode false', function () {
+    it('should allow strict mode false', () => {
       expect(new Cents(5).greaterThanOrEqual(4, {strict: false})).to.be.true;
       expect(new Cents(5).greaterThanOrEqual('4', {strict: false})).to.be.true;
     });
   });
 
-  describe('.gte', function () {
-    it('should work if the argument is a Cents object with the smaller value when strict', function () {
+  describe('.gte', () => {
+    it('should work if the argument is a Cents object with the smaller value when strict', () => {
       const cents = new Cents(5);
       expect(cents.gte(new Cents(10))).to.be.false;
       expect(cents.gte(new Cents(4))).to.be.true;
@@ -236,14 +236,14 @@ describe('Cents', function () {
       expect(cents.gte(5)).to.be.false;
     });
 
-    it('should allow strict mode false', function () {
+    it('should allow strict mode false', () => {
       expect(new Cents(5).gte(4, {strict: false})).to.be.true;
       expect(new Cents(5).gte('4', {strict: false})).to.be.true;
     });
   });
 
-  describe('.lessThanOrEqual', function () {
-    it('should work if the argument is a Cents object with the larger value when strict', function () {
+  describe('.lessThanOrEqual', () => {
+    it('should work if the argument is a Cents object with the larger value when strict', () => {
       const cents = new Cents(5);
       expect(cents.lessThanOrEqual(new Cents(10))).to.be.true;
       expect(cents.lessThanOrEqual(new Cents(4))).to.be.false;
@@ -253,14 +253,14 @@ describe('Cents', function () {
       expect(cents.lessThanOrEqual(5)).to.be.false;
     });
 
-    it('should allow strict mode false', function () {
+    it('should allow strict mode false', () => {
       expect(new Cents(5).lessThanOrEqual(10, {strict: false})).to.be.true;
       expect(new Cents(5).lessThanOrEqual('10', {strict: false})).to.be.true;
     });
   });
 
-  describe('.lte', function () {
-    it('should work if the argument is a Cents object with the larger value when strict', function () {
+  describe('.lte', () => {
+    it('should work if the argument is a Cents object with the larger value when strict', () => {
       const cents = new Cents(5);
       expect(cents.lte(new Cents(10))).to.be.true;
       expect(cents.lte(new Cents(4))).to.be.false;
@@ -270,13 +270,13 @@ describe('Cents', function () {
       expect(cents.lte(5)).to.be.false;
     });
 
-    it('should allow strict mode false', function () {
+    it('should allow strict mode false', () => {
       expect(new Cents(5).lte(10, {strict: false})).to.be.true;
       expect(new Cents(5).lte('10', {strict: false})).to.be.true;
     });
   });
 
-  describe('.sum', function () {
+  describe('.sum', () => {
     it('should work with a single value splat', () => expect(sum(1)).to.have.property('value', 1));
 
     it('should work with a multiple value splat', () =>
@@ -290,7 +290,7 @@ describe('Cents', function () {
     it('should throw an exception when passed no arguments', () => expect(() => sum()).to.throw());
   });
 
-  describe('.sumDollars', function () {
+  describe('.sumDollars', () => {
     it('should work with a multiple value splat 100', () =>
       expect(sumDollars(1)).to.have.property('value', 100));
 
@@ -307,9 +307,9 @@ describe('Cents', function () {
       expect(() => sumDollars()).to.throw());
   });
 
-  describe('arithmetic', function () {
-    describe('plus', function () {
-      it('should a new Cents', function () {
+  describe('arithmetic', () => {
+    describe('plus', () => {
+      it('should a new Cents', () => {
         const zeroCents = new Cents(0);
         const newZeroCents = zeroCents.plus(0);
         expect(newZeroCents).to.be.instanceof(Cents);
@@ -322,37 +322,37 @@ describe('Cents', function () {
       it('should accept a string param and a new Cents with the correct value', () =>
         expect(new Cents(1).plus('2')).to.have.property('value', 3));
 
-      it('should allow strict mode true', function () {
+      it('should allow strict mode true', () => {
         expect(() => new Cents(5).plus('5')).not.to.throw();
         expect(() => new Cents(5).plus('5', {strict: true})).to.throw();
       });
     });
 
-    describe('minus', function () {
+    describe('minus', () => {
       it('should a new Cents with the correct amount', () =>
         expect(new Cents(3).minus(1)).to.have.property('value', 2));
 
       it('should throw an expection if a negative cents would be returned', () =>
         expect(() => new Cents(1).minus(2)).to.throw());
 
-      it('should prevent underflow exception when maxZero flag is set', function () {
+      it('should prevent underflow exception when maxZero flag is set', () => {
         const shouldBeZero = new Cents(1).minus(2, {maxZero: true});
         expect(shouldBeZero).to.have.property('value', 0);
       });
 
-      it('should allow strict mode true', function () {
+      it('should allow strict mode true', () => {
         expect(() => new Cents(5).minus('5')).not.to.throw();
         expect(() => new Cents(5).minus('5', {strict: true})).to.throw();
       });
     });
 
-    describe('times', function () {
-      it('should throw an exception if an invalid scalar is provided', function () {
+    describe('times', () => {
+      it('should throw an exception if an invalid scalar is provided', () => {
         expect(() => new Cents(1).times(0.5)).to.throw();
         expect(() => new Cents(10).times(-3)).to.throw();
       });
 
-      it('should a new Cents with the correct value', function () {
+      it('should a new Cents with the correct value', () => {
         const cents = new Cents(5);
         expect(cents.times(1)).to.have.property('value', 5);
         expect(cents.times(5)).to.have.property('value', 25);
@@ -360,36 +360,36 @@ describe('Cents', function () {
         expect(cents.times(0)).to.have.property('value', 0);
       });
 
-      it('should allow transform', function () {
+      it('should allow transform', () => {
         const cents = new Cents(5);
         expect(cents.times(0.5, {transform: 'round'})).to.have.property('value', 3);
         expect(cents.times(0.5, {transform: 'floor'})).to.have.property('value', 2);
       });
     });
 
-    describe('dividedBy', function () {
-      it('should throw an exception if an invalid scalar is provided', function () {
+    describe('dividedBy', () => {
+      it('should throw an exception if an invalid scalar is provided', () => {
         expect(() => new Cents(1).dividedBy(0.6)).to.throw();
         expect(() => new Cents(100).dividedBy(0)).to.throw();
         expect(() => new Cents(10).dividedBy(-2)).to.throw();
       });
 
-      it('should a new Cents with the correct value', function () {
+      it('should a new Cents with the correct value', () => {
         const cents = new Cents(10);
         expect(cents.dividedBy(2)).to.have.property('value', 5);
         expect(cents.dividedBy(5)).to.have.property('value', 2);
         expect(cents.dividedBy(0.5)).to.have.property('value', 20);
       });
 
-      it('should allow transform', function () {
+      it('should allow transform', () => {
         const cents = new Cents(5);
         expect(cents.dividedBy(50, {transform: 'round'})).to.have.property('value', 0);
         expect(cents.dividedBy(50, {transform: 'ceil'})).to.have.property('value', 1);
       });
     });
 
-    describe('percent', function () {
-      it('should be equivalent to "times(percent / 100)"', function () {
+    describe('percent', () => {
+      it('should be equivalent to "times(percent / 100)"', () => {
         const cents1 = new Cents(10).percent(50);
         const cents2 = new Cents(10).times(50 / 100);
         expect(cents1.equals(cents2)).to.be.true;
@@ -404,7 +404,7 @@ describe('Cents', function () {
   });
 
   describe('toString', () =>
-    it('should be correctly formatted', function () {
+    it('should be correctly formatted', () => {
       expect(new Cents(0).toString()).to.equal('$0.00');
       expect(new Cents(1).toString()).to.equal('$0.01');
       expect(new Cents(10).toString()).to.equal('$0.10');
