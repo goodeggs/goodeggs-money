@@ -157,6 +157,23 @@ describe('Cents', function () {
     });
   });
 
+  describe('.gt', function () {
+    it('should work if the argument is a Cents object with the smaller value when strict', function () {
+      const cents = new Cents(5);
+      expect(cents.gt(new Cents(10))).to.be.false;
+      expect(cents.gt(new Cents(4))).to.be.true;
+      expect(cents.gt(new Cents(5))).to.be.false;
+      expect(cents.gt(10)).to.be.false;
+      expect(cents.gt(4)).to.be.false;
+      expect(cents.gt(5)).to.be.false;
+    });
+
+    it('should allow strict mode false', function () {
+      expect(new Cents(5).gt(4, {strict: false})).to.be.true;
+      expect(new Cents(5).gt('4', {strict: false})).to.be.true;
+    });
+  });
+
   describe('.lessThan', function () {
     it('should work if the argument is a Cents object with the larger value when strict', function () {
       const cents = new Cents(5);
@@ -171,6 +188,23 @@ describe('Cents', function () {
     it('should allow strict mode false', function () {
       expect(new Cents(5).lessThan(10, {strict: false})).to.be.true;
       expect(new Cents(5).lessThan('10', {strict: false})).to.be.true;
+    });
+  });
+
+  describe('.lt', function () {
+    it('should work if the argument is a Cents object with the larger value when strict', function () {
+      const cents = new Cents(5);
+      expect(cents.lt(new Cents(10))).to.be.true;
+      expect(cents.lt(new Cents(4))).to.be.false;
+      expect(cents.lt(new Cents(5))).to.be.false;
+      expect(cents.lt(10)).to.be.false;
+      expect(cents.lt(4)).to.be.false;
+      expect(cents.lt(5)).to.be.false;
+    });
+
+    it('should allow strict mode false', function () {
+      expect(new Cents(5).lt(10, {strict: false})).to.be.true;
+      expect(new Cents(5).lt('10', {strict: false})).to.be.true;
     });
   });
 
@@ -191,6 +225,23 @@ describe('Cents', function () {
     });
   });
 
+  describe('.gte', function () {
+    it('should work if the argument is a Cents object with the smaller value when strict', function () {
+      const cents = new Cents(5);
+      expect(cents.gte(new Cents(10))).to.be.false;
+      expect(cents.gte(new Cents(4))).to.be.true;
+      expect(cents.gte(new Cents(5))).to.be.true;
+      expect(cents.gte(10)).to.be.false;
+      expect(cents.gte(4)).to.be.false;
+      expect(cents.gte(5)).to.be.false;
+    });
+
+    it('should allow strict mode false', function () {
+      expect(new Cents(5).gte(4, {strict: false})).to.be.true;
+      expect(new Cents(5).gte('4', {strict: false})).to.be.true;
+    });
+  });
+
   describe('.lessThanOrEqual', function () {
     it('should work if the argument is a Cents object with the larger value when strict', function () {
       const cents = new Cents(5);
@@ -205,6 +256,23 @@ describe('Cents', function () {
     it('should allow strict mode false', function () {
       expect(new Cents(5).lessThanOrEqual(10, {strict: false})).to.be.true;
       expect(new Cents(5).lessThanOrEqual('10', {strict: false})).to.be.true;
+    });
+  });
+
+  describe('.lte', function () {
+    it('should work if the argument is a Cents object with the larger value when strict', function () {
+      const cents = new Cents(5);
+      expect(cents.lte(new Cents(10))).to.be.true;
+      expect(cents.lte(new Cents(4))).to.be.false;
+      expect(cents.lte(new Cents(5))).to.be.true;
+      expect(cents.lte(10)).to.be.false;
+      expect(cents.lte(4)).to.be.false;
+      expect(cents.lte(5)).to.be.false;
+    });
+
+    it('should allow strict mode false', function () {
+      expect(new Cents(5).lte(10, {strict: false})).to.be.true;
+      expect(new Cents(5).lte('10', {strict: false})).to.be.true;
     });
   });
 

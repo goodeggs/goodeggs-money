@@ -209,20 +209,20 @@ class Cents {
     }
   }
 
-  lt(args) {
-    return Reflect.apply(this.lessThan, this, [...args]);
+  lt(...args) {
+    return Reflect.apply(this.lessThan, this, args);
   }
 
-  lte(args) {
-    return Reflect.apply(this.lessThanOrEqual, this, [...args]);
+  lte(...args) {
+    return Reflect.apply(this.lessThanOrEqual, this, args);
   }
 
-  gt(args) {
-    return Reflect.apply(this.greaterThan, this, [...args]);
+  gt(...args) {
+    return Reflect.apply(this.greaterThan, this, args);
   }
 
-  gte(args) {
-    return Reflect.apply(this.greaterThanOrEqual, this, [...args]);
+  gte(...args) {
+    return Reflect.apply(this.greaterThanOrEqual, this, args);
   }
 
   static isValid(maybeCents) {
