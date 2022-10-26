@@ -3,6 +3,7 @@
   "version": "1.8.7",
   "description": "Reliable money math with BigNumber  wrapped inside Cents",
   "author": "Good Eggs <open-source@goodeggs.com>",
+  "type": "module",
   "contributors": [
     "John Rothfels <john.rothfels@gmail.com>"
   ],
