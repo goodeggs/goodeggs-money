@@ -1,5 +1,4 @@
-// eslint-disable-next-line import/no-commonjs
-const {BigNumber} = require('bignumber.js');
+import {BigNumber} from 'bignumber.js';
 
 // http://stackoverflow.com/questions/3885817/how-to-check-if-a-number-is-float-or-integer
 const isInt = (maybeInt) => maybeInt % 1 === 0;
@@ -282,5 +281,4 @@ class Cents {
   };
 }
 
-// eslint-disable-next-line import/no-commonjs
-module.exports = Cents;
+export default Cents;

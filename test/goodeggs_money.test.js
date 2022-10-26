@@ -1,9 +1,8 @@
 /* eslint-disable no-unused-expressions */
-/* eslint-disable import/no-commonjs */
-const {BigNumber} = require('bignumber.js');
-const {expect} = require('chai');
+import {BigNumber} from 'bignumber.js';
+import {expect} from 'chai';
 
-const Cents = require('../src');
+import Cents from '../src';
 
 const {fromDollars, isValid, max, min, round, isValidDollars, sum, sumDollars} = Cents;
 
