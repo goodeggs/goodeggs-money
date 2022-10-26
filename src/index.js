@@ -38,6 +38,39 @@ const comparators = {
     return cents.toNumber() >= otherCents.toNumber();
   },
 };
+
+// This method supports static method calls of the form:
+//   Cents.staticMethod(...)
+//
+// The ... must include at least one argument.
+//
+// Case 1: ... => single argument array
+//   There must be no other arguments and each value in the array must "pass" the
+//   validator (boolean) predicate function. Returns the array.
+// Case 2: ... => multiple argument values
+//   Each value must "pass" the validator predicate function. Returns an array of the values.
+const arrayifySplat = function (splat, validator) {
+  if (!(splat.length > 0)) {
+    throw new Error('Expect at least one argument');
+  }
+
+  if (Array.isArray(splat[0])) {
+    if (splat.length !== 1) {
+      throw new Error('Expect a single array argument');
+    }
+    splat = splat[0];
+  }
+
+  if (validator != null) {
+    splat.forEach(function (val) {
+      if (!validator(val)) {
+        throw new Error(`Unexpected value ${val}`);
+      }
+    });
+  }
+
+  return splat;
+};
 class Cents {
   constructor(value) {
     this.equals = compareCentsFunction(comparators.equals);
@@ -177,100 +210,78 @@ class Cents {
       return bigNumber[transform]();
     }
   }
-}
 
-Cents.prototype.lt = Cents.prototype.lessThan;
-Cents.prototype.lte = Cents.prototype.lessThanOrEqual;
-Cents.prototype.gt = Cents.prototype.greaterThan;
-Cents.prototype.gte = Cents.prototype.greaterThanOrEqual;
-
-Cents.isValid = function (maybeCents) {
-  let centsInstance;
-  try {
-    centsInstance = new Cents(maybeCents);
-  } catch {
-    centsInstance = new Error('invalid');
-  }
-  return centsInstance instanceof Cents;
-};
-
-Cents.isValidDollars = function (maybeDollars) {
-  let threw = false;
-  try {
-    Cents.fromDollars(maybeDollars);
-  } catch {
-    threw = true;
-  }
-  return !threw;
-};
-
-Cents.fromDollars = (
-  dollars, // dollars should be a Number like xx.yy
-) => new Cents(new BigNumber(dollars).times(100));
-
-Cents.round = function (maybeInt) {
-  if (!(maybeInt >= 0)) {
-    throw new Error(`${maybeInt} must be positive to round to cents`);
-  }
-  return new Cents(new BigNumber(maybeInt).integerValue(BigNumber.ROUND_HALF_UP));
-};
-
-// This method supports static method calls of the form:
-//   Cents.staticMethod(...)
-//
-// The ... must include at least one argument.
-//
-// Case 1: ... => single argument array
-//   There must be no other arguments and each value in the array must "pass" the
-//   validator (boolean) predicate function. Returns the array.
-// Case 2: ... => multiple argument values
-//   Each value must "pass" the validator predicate function. Returns an array of the values.
-const arrayifySplat = function (splat, validator) {
-  if (!(splat.length > 0)) {
-    throw new Error('Expect at least one argument');
+  lt() {
+    return Reflect.apply(this.lessThan, this);
   }
 
-  if (Array.isArray(splat[0])) {
-    if (splat.length !== 1) {
-      throw new Error('Expect a single array argument');
+  lte() {
+    return Reflect.apply(this.lessThanOrEqual, this);
+  }
+
+  gt() {
+    return Reflect.apply(this.greaterThan, this);
+  }
+
+  gte() {
+    return Reflect.apply(this.greaterThanOrEqual, this);
+  }
+
+  static isValid = function (maybeCents) {
+    let centsInstance;
+    try {
+      centsInstance = new Cents(maybeCents);
+    } catch {
+      centsInstance = new Error('invalid');
     }
-    splat = splat[0];
-  }
+    return centsInstance instanceof Cents;
+  };
 
-  if (validator != null) {
-    splat.forEach(function (val) {
-      if (!validator(val)) {
-        throw new Error(`Unexpected value ${val}`);
-      }
-    });
-  }
+  static isValidDollars = function (maybeDollars) {
+    let threw = false;
+    try {
+      Cents.fromDollars(maybeDollars);
+    } catch {
+      threw = true;
+    }
+    return !threw;
+  };
 
-  return splat;
-};
+  static fromDollars = (
+    dollars, // dollars should be a Number like xx.yy
+  ) => new Cents(new BigNumber(dollars).times(100));
 
-Cents.min = function (...cents) {
-  cents = arrayifySplat(cents, Cents.isValid);
-  cents = cents.map((cent) => new Cents(cent).toNumber());
-  const min = Math.min(...cents);
-  return new Cents(min);
-};
+  static round = function (maybeInt) {
+    if (!(maybeInt >= 0)) {
+      throw new Error(`${maybeInt} must be positive to round to cents`);
+    }
+    return new Cents(new BigNumber(maybeInt).integerValue(BigNumber.ROUND_HALF_UP));
+  };
 
-Cents.max = function (...cents) {
-  cents = arrayifySplat(cents, Cents.isValid);
-  cents = cents.map((cent) => new Cents(cent).toNumber());
-  const max = Math.max(...cents);
-  return new Cents(max);
-};
+  static min = function (...cents) {
+    cents = arrayifySplat(cents, Cents.isValid);
+    cents = cents.map((cent) => new Cents(cent).toNumber());
+    const min = Math.min(...cents);
+    return new Cents(min);
+  };
 
-Cents.sum = function (...cents) {
-  cents = arrayifySplat(cents, Cents.isValid);
-  return cents.reduce((memo, val) => memo.plus(val), new Cents(0));
-};
+  static max = function (...cents) {
+    cents = arrayifySplat(cents, Cents.isValid);
+    cents = cents.map((cent) => new Cents(cent).toNumber());
+    const max = Math.max(...cents);
+    return new Cents(max);
+  };
 
-Cents.sumDollars = function (...dollars) {
-  dollars = arrayifySplat(dollars, Cents.isValidDollars);
-  return dollars.reduce((memo, val) => memo.plus(Cents.fromDollars(val)), new Cents(0));
-};
+  static sum = function (...cents) {
+    cents = arrayifySplat(cents, Cents.isValid);
+    return cents.reduce((memo, val) => memo.plus(val), new Cents(0));
+  };
+
+  static sumDollars = function (...dollars) {
+    dollars = arrayifySplat(dollars, Cents.isValidDollars);
+    return dollars.reduce((memo, val) => memo.plus(Cents.fromDollars(val)), new Cents(0));
+  };
+}
 
 // eslint-disable-next-line import/no-commonjs
 module.exports = Cents;
