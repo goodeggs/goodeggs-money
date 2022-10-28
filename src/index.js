@@ -73,9 +73,13 @@ class Cents {
   constructor(value) {
     this.equals = compareCentsFunction(comparators.equals, Cents);
     this.lessThan = compareCentsFunction(comparators.lessThan, Cents);
+    this.lt = this.lessThan;
     this.lessThanOrEqual = compareCentsFunction(comparators.lessThanOrEqual, Cents);
+    this.lte = this.lessThanOrEqual;
     this.greaterThan = compareCentsFunction(comparators.greaterThan, Cents);
+    this.gt = this.greaterThan;
     this.greaterThanOrEqual = compareCentsFunction(comparators.greaterThanOrEqual, Cents);
+    this.gte = this.greaterThanOrEqual;
     this.value = value;
     if ((this.value != null ? this.value.toNumber : undefined) != null) {
       // Could be instanceof BigNumber or Cents.
@@ -207,22 +211,6 @@ class Cents {
     } else {
       return bigNumber[transform]();
     }
-  }
-
-  lt(...args) {
-    return Reflect.apply(this.lessThan, this, args);
-  }
-
-  lte(...args) {
-    return Reflect.apply(this.lessThanOrEqual, this, args);
-  }
-
-  gt(...args) {
-    return Reflect.apply(this.greaterThan, this, args);
-  }
-
-  gte(...args) {
-    return Reflect.apply(this.greaterThanOrEqual, this, args);
   }
 
   static isValid(maybeCents) {
