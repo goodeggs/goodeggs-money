@@ -45,6 +45,7 @@
     "lint": "yarn run lint:es",
     "lint:es": "getk run lint-es",
     "lint:fix": "yarn run lint:fix:es",
-    "lint:fix:es": "getk run fix-es"
+    "lint:fix:es": "getk run fix-es",
+    "clean": "rm -rf lib"
   }
 }
