@@ -30,7 +30,8 @@
     "@goodeggs/toolkit": "^7.0.1",
     "@goodeggs/tsconfig": "^2.0.2",
     "goodeggs-test-helpers": "^8.3.3",
-    "mocha": "^7.1.0"
+    "mocha": "^7.1.0",
+    "typescript": "^4.8.4"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
