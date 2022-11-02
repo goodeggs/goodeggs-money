@@ -1,5 +1,9 @@
 import {BigNumber} from 'bignumber.js';
 
+interface Params {
+  transform: string;
+}
+
 // http://stackoverflow.com/questions/3885817/how-to-check-if-a-number-is-float-or-integer
 const isInt = (maybeInt) => maybeInt % 1 === 0;
 
@@ -118,19 +122,19 @@ class Cents {
     }
   }
 
-  toBigNumber() {
+  toBigNumber(): BigNumber {
     return new BigNumber(this.value);
   }
 
-  toDollars() {
+  toDollars(): number {
     return this.toBigNumber().dividedBy(100).toNumber();
   }
 
-  toNumber() {
+  toNumber(): number {
     return this.value;
   }
 
-  plus(cents, param) {
+  plus(cents: Cents, param?: {strict: boolean}): Cents {
     if (param == null) {
       param = {
         strict: false,
@@ -146,7 +150,7 @@ class Cents {
     return new Cents(this.toBigNumber().plus(cents.toNumber()));
   }
 
-  minus(cents, param) {
+  minus(cents: Cents, param: {strict: boolean; maxZero: boolean}): Cents {
     if (param == null) {
       param = {
         strict: false,
@@ -169,7 +173,7 @@ class Cents {
     return new Cents(result); // will throw if negative
   }
 
-  times(scalar, param) {
+  times(scalar: number, param: Params | Record<string, undefined>): Cents {
     // Transform can be any no-arg BigNumber function and should produce a valid Cents value.
     // e.g. 'ceil', 'round'
     if (param == null) {
@@ -186,7 +190,7 @@ class Cents {
     return new Cents(result);
   }
 
-  dividedBy(scalar, param) {
+  dividedBy(scalar: number, param: Params | Record<string, undefined>): Cents {
     // Transform can be any no-arg BigNumber function and should produce a valid Cents value.
     // e.g. 'ceil', 'round'
     if (param == null) {
@@ -203,7 +207,7 @@ class Cents {
     return new Cents(result);
   }
 
-  percent(percent, param) {
+  percent(percent: number, param: Params): Cents {
     // Is equivalent to @times(percent / 100, {transform})
     // but avoids (percent / 100) returning too many sig figs for BigNumber.
     // TODO(serhalp) this is no longer an issue since BigNumber.js@7.0.0:
@@ -222,15 +226,15 @@ class Cents {
   }
 
   // Handy aliases.
-  is0() {
+  is0(): boolean {
     return this.equals(new Cents(0));
   }
 
-  isnt0() {
+  isnt0(): boolean {
     return !this.is0();
   }
 
-  toString() {
+  toString(): string {
     return `$${new BigNumber(this.toDollars()).toFixed(2)}`;
   }
 
@@ -239,7 +243,7 @@ class Cents {
   // allowed magically calling through to underlying BigNumber.js methods. This is a shim to
   // continue to transparently continue to support the frequently used `round` "transform" without
   // breaking backwards compatibility.
-  _applyBackwardsCompatibleTransform(bigNumber, transform) {
+  _applyBackwardsCompatibleTransform(bigNumber: BigNumber, transform: string): BigNumber {
     if (transform === 'round') {
       return bigNumber.integerValue(BigNumber.ROUND_HALF_UP);
     } else if (transform === 'floor') {
@@ -255,7 +259,7 @@ class Cents {
     }
   }
 
-  static isValid(maybeCents) {
+  static isValid(maybeCents: Cents): boolean {
     let centsInstance;
 
     try {
@@ -267,7 +271,7 @@ class Cents {
     return centsInstance instanceof Cents;
   }
 
-  static isValidDollars(maybeDollars) {
+  static isValidDollars(maybeDollars: number): boolean {
     let threw = false;
 
     try {
@@ -280,10 +284,10 @@ class Cents {
   }
 
   static fromDollars = (
-    dollars, // dollars should be a Number like xx.yy
-  ) => new Cents(new BigNumber(dollars).times(100));
+    dollars: number, // dollars should be a Number like xx.yy
+  ): Cents => new Cents(new BigNumber(dollars).times(100));
 
-  static round(maybeInt) {
+  static round(maybeInt: number): Cents {
     if (!(maybeInt >= 0)) {
       throw new Error(`${maybeInt} must be positive to round to cents`);
     }
@@ -291,26 +295,26 @@ class Cents {
     return new Cents(new BigNumber(maybeInt).integerValue(BigNumber.ROUND_HALF_UP));
   }
 
-  static min(...cents) {
+  static min(...cents: Cents[]): Cents {
     cents = arrayifySplat(cents, Cents.isValid);
-    cents = cents.map((cent) => new Cents(cent).toNumber());
-    const min = Math.min(...cents);
+    const centsNumber = cents.map((cent) => new Cents(cent).toNumber());
+    const min = Math.min(...centsNumber);
     return new Cents(min);
   }
 
-  static max(...cents) {
+  static max(...cents: Cents[]): Cents {
     cents = arrayifySplat(cents, Cents.isValid);
-    cents = cents.map((cent) => new Cents(cent).toNumber());
-    const max = Math.max(...cents);
+    const centsNumber = cents.map((cent) => new Cents(cent).toNumber());
+    const max = Math.max(...centsNumber);
     return new Cents(max);
   }
 
-  static sum(...cents) {
+  static sum(...cents: Cents[]): Cents {
     cents = arrayifySplat(cents, Cents.isValid);
     return cents.reduce((memo, val) => memo.plus(val), new Cents(0));
   }
 
-  static sumDollars(...dollars) {
+  static sumDollars(...dollars: number[]): Cents {
     dollars = arrayifySplat(dollars, Cents.isValidDollars);
     return dollars.reduce((memo, val) => memo.plus(Cents.fromDollars(val)), new Cents(0));
   }
