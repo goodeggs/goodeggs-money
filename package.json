@@ -39,7 +39,7 @@
   },
   "scripts": {
     "prepublishOnly": "yarn run build",
-    "build": "yarn run clean && yarn run build:es",
+    "build": "yarn run clean && yarn run build:es && yarn run build:types",
     "build:es": "babel --extensions .ts,.js --source-maps --ignore 'src/*.test.ts' --out-dir lib/ src/",
     "test": "yarn run lint && yarn run test:unit",
     "test:unit": "mocha --require @babel/polyfill --require .register.ts --extension ts,js,jsx,tsx",
@@ -47,6 +47,7 @@
     "lint:es": "getk run lint-es",
     "lint:fix": "yarn run lint:fix:es",
     "lint:fix:es": "getk run fix-es",
-    "clean": "rm -rf lib"
+    "clean": "rm -rf lib",
+    "build:types": "tsc --project tsconfig.declarations.json"
   }
 }
