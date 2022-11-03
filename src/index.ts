@@ -170,7 +170,7 @@ class Cents {
       cents = new Cents(cents);
     }
 
-    return new Cents(this.toBigNumber().plus(cents.toNumber()));
+    return new Cents(this.toBigNumber().plus(new Cents(cents).toNumber()));
   }
 
   minus(cents: ValidInputs, param?: {strict?: boolean; maxZero?: boolean}): Cents {
@@ -187,7 +187,7 @@ class Cents {
       cents = new Cents(cents);
     }
 
-    const result = this.toBigNumber().minus(cents.toNumber()).toNumber(); // Number; may be negative
+    const result = this.toBigNumber().minus(new Cents(cents).toNumber()).toNumber(); // Number; may be negative
 
     if (maxZero) {
       return new Cents(Math.max(0, result));

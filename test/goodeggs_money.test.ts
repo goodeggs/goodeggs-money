@@ -36,25 +36,25 @@ describe('Cents', () => {
   });
   describe('.max', () => {
     it('throws if not provided at least one value', () => expect(() => max()).to.throw());
-    it('throws if provided an empty array', () => expect(() => max([])).to.throw());
-    it('throws if provided an invalid splat', () => expect(() => max([1], 2, 3)).to.throw());
+    it('throws if provided an empty array', () => expect(() => max(...[])).to.throw());
     it('works with a single value', () => expect(max(new Cents(3))).to.have.property('value', 3));
     it('works with multiple values', () =>
       expect(max(new Cents(2), new Cents(3), new Cents(1))).to.have.property('value', 3));
     it('works with non Cents values', () =>
       expect(max(new Cents(2), 3, '1')).to.have.property('value', 3));
-    it('works with a non-empty array', () => expect(max([1, 2, 3])).to.have.property('value', 3));
+    it('works with a non-empty array', () =>
+      expect(max(...[1, 2, 3])).to.have.property('value', 3));
   });
   describe('.min', () => {
     it('throws if not provided at least one value', () => expect(() => min()).to.throw());
-    it('throws if provided an empty array', () => expect(() => min([])).to.throw());
-    it('throws if provided an invalid splat', () => expect(() => min([1], 2, 3)).to.throw());
+    it('throws if provided an empty array', () => expect(() => min(...[])).to.throw());
     it('works with a single value', () => expect(min(new Cents(3))).to.have.property('value', 3));
     it('works with multiple values', () =>
       expect(min(new Cents(3), new Cents(1), new Cents(2))).to.have.property('value', 1));
     it('works with non Cents values', () =>
       expect(min(new Cents(3), 1, '2')).to.have.property('value', 1));
-    it('works with a non-empty array', () => expect(min([1, 2, 3])).to.have.property('value', 1));
+    it('works with a non-empty array', () =>
+      expect(min(...[1, 2, 3])).to.have.property('value', 1));
   });
   describe('.round', () => {
     it('rounds down', () => expect(round(0.4999)).to.have.property('value', 0));
@@ -291,9 +291,9 @@ describe('Cents', () => {
     it('should work with a single value splat', () => expect(sum(1)).to.have.property('value', 1));
     it('should work with a multiple value splat', () =>
       expect(sum(1, 2, 3)).to.have.property('value', 6));
-    it('should work with an empty array', () => expect(sum([])).to.have.property('value', 0));
+    it('should work with an empty array', () => expect(sum(...[])).to.have.property('value', 0));
     it('should work with a non-empty array', () =>
-      expect(sum([1, 2, 3])).to.have.property('value', 6));
+      expect(sum(...[1, 2, 3])).to.have.property('value', 6));
     it('should throw an exception when passed no arguments', () => expect(() => sum()).to.throw());
   });
   describe('.sumDollars', () => {
@@ -302,9 +302,9 @@ describe('Cents', () => {
     it('should work with a multiple value splat 350', () =>
       expect(sumDollars(1, 2.5)).to.have.property('value', 350));
     it('should work with an empty array', () =>
-      expect(sumDollars([])).to.have.property('value', 0));
+      expect(sumDollars(...[])).to.have.property('value', 0));
     it('should work with a non-empty array', () =>
-      expect(sumDollars([1, 2, 3])).to.have.property('value', 600));
+      expect(sumDollars(...[1, 2, 3])).to.have.property('value', 600));
     it('should throw an exception when passed no arguments', () =>
       expect(() => sumDollars()).to.throw());
   });
