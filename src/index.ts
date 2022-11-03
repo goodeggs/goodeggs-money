@@ -1,14 +1,24 @@
 import {BigNumber} from 'bignumber.js';
 
+type Transform = keyof BigNumber | 'round' | 'floor' | 'ceil';
+
 interface Params {
-  transform: string;
+  transform: Transform;
 }
 
-// http://stackoverflow.com/questions/3885817/how-to-check-if-a-number-is-float-or-integer
-const isInt = (maybeInt) => maybeInt % 1 === 0;
+interface Options {
+  strict?: boolean;
+}
 
-const compareCentsFunction = (comparator, Class) =>
-  function (val, options) {
+type Comparator = (cents: Cents, otherCents: Cents) => boolean;
+type Validator = (maybeCents: Cents) => boolean;
+
+// http://stackoverflow.com/questions/3885817/how-to-check-if-a-number-is-float-or-integer
+const isInt = (maybeInt: number): boolean => maybeInt % 1 === 0;
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const compareCentsFunction = (comparator: Comparator, ClassInstance: any) =>
+  function (val: any, options?: Options): boolean {
     if (options == null) {
       options = {};
     }
@@ -20,33 +30,27 @@ const compareCentsFunction = (comparator, Class) =>
     }
 
     if (options.strict) {
-      return val instanceof Class && comparator(cents, val);
+      return val instanceof ClassInstance && comparator(cents, val);
     }
 
-    const otherCents = new Class(val);
+    const otherCents = new ClassInstance(val);
     return comparator(cents, otherCents);
   };
 
+const equals: Comparator = (cents, otherCents) => cents.toNumber() === otherCents.toNumber();
+const lessThan: Comparator = (cents, otherCents) => cents.toNumber() < otherCents.toNumber();
+const lessThanOrEqual: Comparator = (cents, otherCents) =>
+  cents.toNumber() <= otherCents.toNumber();
+const greaterThan: Comparator = (cents, otherCents) => cents.toNumber() > otherCents.toNumber();
+const greaterThanOrEqual: Comparator = (cents, otherCents) =>
+  cents.toNumber() >= otherCents.toNumber();
+
 const comparators = {
-  equals(cents, otherCents) {
-    return cents.toNumber() === otherCents.toNumber();
-  },
-
-  lessThan(cents, otherCents) {
-    return cents.toNumber() < otherCents.toNumber();
-  },
-
-  lessThanOrEqual(cents, otherCents) {
-    return cents.toNumber() <= otherCents.toNumber();
-  },
-
-  greaterThan(cents, otherCents) {
-    return cents.toNumber() > otherCents.toNumber();
-  },
-
-  greaterThanOrEqual(cents, otherCents) {
-    return cents.toNumber() >= otherCents.toNumber();
-  },
+  equals,
+  lessThan,
+  lessThanOrEqual,
+  greaterThan,
+  greaterThanOrEqual,
 };
 
 // This method supports static method calls of the form:
@@ -59,7 +63,7 @@ const comparators = {
 //   validator (boolean) predicate function. Returns the array.
 // Case 2: ... => multiple argument values
 //   Each value must "pass" the validator predicate function. Returns an array of the values.
-const arrayifySplat = function (splat, validator) {
+const arrayifySplat = function (splat: Cents[], validator: Validator): Cents[] {
   if (!(splat.length > 0)) {
     throw new Error('Expect at least one argument');
   }
@@ -75,7 +79,7 @@ const arrayifySplat = function (splat, validator) {
   if (validator != null) {
     splat.forEach(function (val) {
       if (!validator(val)) {
-        throw new Error(`Unexpected value ${val}`);
+        throw new Error(`Unexpected value ${val.toString()}`);
       }
     });
   }
@@ -84,7 +88,21 @@ const arrayifySplat = function (splat, validator) {
 };
 
 class Cents {
-  constructor(value) {
+  public equals: any;
+  public lessThan: any;
+  public lt: any;
+  public lessThanOrEqual: any;
+  public lte: any;
+  public greaterThan: any;
+  public gt: any;
+  public greaterThanOrEqual: any;
+  public gte: any;
+  public value: number | Cents | BigNumber;
+  public strict: any;
+  public maxZero: any;
+  public transform: any;
+
+  constructor(value: number | Cents | BigNumber) {
     this.equals = compareCentsFunction(comparators.equals, Cents);
     this.lessThan = compareCentsFunction(comparators.lessThan, Cents);
     this.lt = this.lessThan;
@@ -96,7 +114,7 @@ class Cents {
     this.gte = this.greaterThanOrEqual;
     this.value = value;
 
-    if ((this.value != null ? this.value.toNumber : undefined) != null) {
+    if (this.value instanceof Cents || this.value instanceof BigNumber) {
       // Could be instanceof BigNumber or Cents.
       this.value = this.value.toNumber();
     }
@@ -106,7 +124,7 @@ class Cents {
     }
 
     if (typeof this.value !== 'number') {
-      throw new Error(`${this.value} must be a Number`);
+      throw new Error(this.value);
     }
 
     if (isNaN(this.value)) {
@@ -114,7 +132,7 @@ class Cents {
     }
 
     if (!isInt(this.value)) {
-      throw new Error(`${this.value} must be an int`);
+      throw new Error(`${this.value.toString()} must be an int`);
     }
 
     if (this.value < 0) {
@@ -123,7 +141,7 @@ class Cents {
   }
 
   toBigNumber(): BigNumber {
-    return new BigNumber(this.value);
+    return new BigNumber(this.value.toString());
   }
 
   toDollars(): number {
@@ -131,6 +149,9 @@ class Cents {
   }
 
   toNumber(): number {
+    if (this.value instanceof Cents || this.value instanceof BigNumber) {
+      return this.value.toNumber();
+    }
     return this.value;
   }
 
@@ -243,7 +264,7 @@ class Cents {
   // allowed magically calling through to underlying BigNumber.js methods. This is a shim to
   // continue to transparently continue to support the frequently used `round` "transform" without
   // breaking backwards compatibility.
-  _applyBackwardsCompatibleTransform(bigNumber: BigNumber, transform: string): BigNumber {
+  _applyBackwardsCompatibleTransform(bigNumber: BigNumber, transform: Transform): BigNumber {
     if (transform === 'round') {
       return bigNumber.integerValue(BigNumber.ROUND_HALF_UP);
     } else if (transform === 'floor') {
@@ -255,7 +276,8 @@ class Cents {
         `Cannot apply transform '${transform}', is not a supported BigNumber.js method`,
       );
     } else {
-      return bigNumber[transform]();
+      // return bigNumber[transform](); // TODO(jonas) check me later and try to call the method as function
+      return bigNumber;
     }
   }
 
@@ -271,17 +293,17 @@ class Cents {
     return centsInstance instanceof Cents;
   }
 
-  static isValidDollars(maybeDollars: number): boolean {
+  static isValidDollars: Validator = (maybeDollars) => {
     let threw = false;
 
     try {
-      Cents.fromDollars(maybeDollars);
+      Cents.fromDollars(maybeDollars.toNumber());
     } catch {
       threw = true;
     }
 
     return !threw;
-  }
+  };
 
   static fromDollars = (
     dollars: number, // dollars should be a Number like xx.yy
@@ -314,9 +336,12 @@ class Cents {
     return cents.reduce((memo, val) => memo.plus(val), new Cents(0));
   }
 
-  static sumDollars(...dollars: number[]): Cents {
+  static sumDollars(...dollars: Cents[]): Cents {
     dollars = arrayifySplat(dollars, Cents.isValidDollars);
-    return dollars.reduce((memo, val) => memo.plus(Cents.fromDollars(val)), new Cents(0));
+    return dollars.reduce(
+      (memo, val) => memo.plus(Cents.fromDollars(val.toNumber())),
+      new Cents(0),
+    );
   }
 }
 
