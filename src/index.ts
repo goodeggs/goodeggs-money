@@ -1,6 +1,8 @@
 import {BigNumber} from 'bignumber.js';
 
 type Transform = keyof BigNumber | 'round' | 'floor' | 'ceil';
+type ValidInputs = Cents | number | string;
+type ValidInputsArray = ValidInputs[];
 
 interface Params {
   transform: Transform;
@@ -11,7 +13,7 @@ interface Options {
 }
 
 type Comparator = (cents: Cents, otherCents: Cents) => boolean;
-type Validator = (maybeCents: Cents) => boolean;
+type Validator = (maybeCents: ValidInputs) => boolean;
 
 // http://stackoverflow.com/questions/3885817/how-to-check-if-a-number-is-float-or-integer
 const isInt = (maybeInt: number): boolean => maybeInt % 1 === 0;
@@ -63,7 +65,7 @@ const comparators = {
 //   validator (boolean) predicate function. Returns the array.
 // Case 2: ... => multiple argument values
 //   Each value must "pass" the validator predicate function. Returns an array of the values.
-const arrayifySplat = function (splat: Cents[], validator: Validator): Cents[] {
+const arrayifySplat = function (splat: ValidInputsArray, validator: Validator): ValidInputsArray {
   if (!(splat.length > 0)) {
     throw new Error('Expect at least one argument');
   }
@@ -155,7 +157,7 @@ class Cents {
     return Number(this.value);
   }
 
-  plus(cents: Cents, param?: {strict: boolean}): Cents {
+  plus(cents: ValidInputs, param?: {strict: boolean}): Cents {
     if (param == null) {
       param = {
         strict: false,
@@ -171,7 +173,7 @@ class Cents {
     return new Cents(this.toBigNumber().plus(cents.toNumber()));
   }
 
-  minus(cents: Cents, param: {strict: boolean; maxZero: boolean}): Cents {
+  minus(cents: ValidInputs, param?: {strict?: boolean; maxZero?: boolean}): Cents {
     if (param == null) {
       param = {
         strict: false,
@@ -194,7 +196,7 @@ class Cents {
     return new Cents(result); // will throw if negative
   }
 
-  times(scalar: number, param: Params | Record<string, undefined>): Cents {
+  times(scalar: number, param?: Params | Record<string, undefined>): Cents {
     // Transform can be any no-arg BigNumber function and should produce a valid Cents value.
     // e.g. 'ceil', 'round'
     if (param == null) {
@@ -211,7 +213,7 @@ class Cents {
     return new Cents(result);
   }
 
-  dividedBy(scalar: number, param: Params | Record<string, undefined>): Cents {
+  dividedBy(scalar: number, param?: Params | Record<string, undefined>): Cents {
     // Transform can be any no-arg BigNumber function and should produce a valid Cents value.
     // e.g. 'ceil', 'round'
     if (param == null) {
@@ -228,7 +230,7 @@ class Cents {
     return new Cents(result);
   }
 
-  percent(percent: number, param: Params): Cents {
+  percent(percent: number, param?: Params): Cents {
     // Is equivalent to @times(percent / 100, {transform})
     // but avoids (percent / 100) returning too many sig figs for BigNumber.
     // TODO(serhalp) this is no longer an issue since BigNumber.js@7.0.0:
@@ -281,7 +283,7 @@ class Cents {
     }
   }
 
-  static isValid(maybeCents: Cents): boolean {
+  static isValid(maybeCents: ValidInputs): boolean {
     let centsInstance;
 
     try {
@@ -297,7 +299,7 @@ class Cents {
     let threw = false;
 
     try {
-      Cents.fromDollars(maybeDollars.toNumber());
+      Cents.fromDollars(new Cents(maybeDollars).toNumber());
     } catch {
       threw = true;
     }
@@ -317,31 +319,30 @@ class Cents {
     return new Cents(new BigNumber(maybeInt).integerValue(BigNumber.ROUND_HALF_UP));
   }
 
-  static min(...cents: Cents[]): Cents {
+  static min(...cents: ValidInputsArray): Cents {
     cents = arrayifySplat(cents, Cents.isValid);
     const centsNumber = cents.map((cent) => new Cents(cent).toNumber());
     const min = Math.min(...centsNumber);
     return new Cents(min);
   }
 
-  static max(...cents: Cents[]): Cents {
+  static max(...cents: ValidInputsArray): Cents {
     cents = arrayifySplat(cents, Cents.isValid);
     const centsNumber = cents.map((cent) => new Cents(cent).toNumber());
     const max = Math.max(...centsNumber);
     return new Cents(max);
   }
 
-  static sum(...cents: Cents[]): Cents {
+  static sum(...cents: ValidInputsArray): Cents {
     cents = arrayifySplat(cents, Cents.isValid);
-    return cents.reduce((memo, val) => memo.plus(val), new Cents(0));
+    return cents.map((val) => new Cents(val)).reduce((memo, val) => memo.plus(val), new Cents(0));
   }
 
-  static sumDollars(...dollars: Cents[]): Cents {
+  static sumDollars(...dollars: ValidInputsArray): Cents {
     dollars = arrayifySplat(dollars, Cents.isValidDollars);
-    return dollars.reduce(
-      (memo, val) => memo.plus(Cents.fromDollars(val.toNumber())),
-      new Cents(0),
-    );
+    return dollars
+      .map((val) => new Cents(val))
+      .reduce((memo, val) => memo.plus(Cents.fromDollars(val.toNumber())), new Cents(0));
   }
 }
 
