@@ -97,12 +97,12 @@ class Cents {
   public gt: any;
   public greaterThanOrEqual: any;
   public gte: any;
-  public value: number | Cents | BigNumber;
+  public value: number | Cents | BigNumber | string;
   public strict: any;
   public maxZero: any;
   public transform: any;
 
-  constructor(value: number | Cents | BigNumber) {
+  constructor(value: number | Cents | BigNumber | string) {
     this.equals = compareCentsFunction(comparators.equals, Cents);
     this.lessThan = compareCentsFunction(comparators.lessThan, Cents);
     this.lt = this.lessThan;
@@ -152,7 +152,7 @@ class Cents {
     if (this.value instanceof Cents || this.value instanceof BigNumber) {
       return this.value.toNumber();
     }
-    return this.value;
+    return Number(this.value);
   }
 
   plus(cents: Cents, param?: {strict: boolean}): Cents {
