@@ -12,14 +12,22 @@ interface Options {
   strict?: boolean;
 }
 
+interface FunctionInterface {
+  (val: any, options?: Options): boolean;
+}
+
 type Comparator = (cents: Cents, otherCents: Cents) => boolean;
 type Validator = (maybeCents: ValidInputs) => boolean;
+type CompareCentsFunctionType = (comparator: Comparator, ClassInstance: any) => FunctionInterface;
 
 // http://stackoverflow.com/questions/3885817/how-to-check-if-a-number-is-float-or-integer
 const isInt = (maybeInt: number): boolean => maybeInt % 1 === 0;
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const compareCentsFunction = (comparator: Comparator, ClassInstance: any) =>
+const compareCentsFunction: CompareCentsFunctionType = (
+  comparator: Comparator,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  ClassInstance: any,
+) =>
   function (val: any, options?: Options): boolean {
     if (options == null) {
       options = {};
@@ -90,19 +98,16 @@ const arrayifySplat = function (splat: ValidInputsArray, validator: Validator): 
 };
 
 class Cents {
-  public equals: any;
-  public lessThan: any;
-  public lt: any;
-  public lessThanOrEqual: any;
-  public lte: any;
-  public greaterThan: any;
-  public gt: any;
-  public greaterThanOrEqual: any;
-  public gte: any;
+  public equals: FunctionInterface;
+  public lessThan: FunctionInterface;
+  public lt: FunctionInterface;
+  public lessThanOrEqual: FunctionInterface;
+  public lte: FunctionInterface;
+  public greaterThan: FunctionInterface;
+  public gt: FunctionInterface;
+  public greaterThanOrEqual: FunctionInterface;
+  public gte: FunctionInterface;
   public value: number | Cents | BigNumber | string;
-  public strict: any;
-  public maxZero: any;
-  public transform: any;
 
   constructor(value: number | Cents | BigNumber | string) {
     this.equals = compareCentsFunction(comparators.equals, Cents);
