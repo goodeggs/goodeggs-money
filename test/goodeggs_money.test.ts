@@ -1,5 +1,6 @@
-import {BigNumber} from 'bignumber.js';
 import {expect} from 'goodeggs-test-helpers';
+import {BigNumber} from 'bignumber.js';
+
 import Cents from '../src';
 
 const {fromDollars, isValid, max, min, round, isValidDollars, sum, sumDollars} = Cents;
