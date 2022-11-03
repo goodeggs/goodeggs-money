@@ -1,6 +1,7 @@
 import {BigNumber} from 'bignumber.js';
 import {expect} from 'goodeggs-test-helpers';
 import Cents from '../src';
+
 const {fromDollars, isValid, max, min, round, isValidDollars, sum, sumDollars} = Cents;
 describe('Cents', () => {
   describe('constructor', () => {
