@@ -16,15 +16,18 @@ interface FunctionInterface {
   (val: any, options?: OptionsInterface): boolean;
 }
 
-type Comparator = (cents: Cents, otherCents: Cents) => boolean;
-type Validator = (maybeCents: ValidInputsType) => boolean;
-type CompareCentsFunctionType = (comparator: Comparator, ClassInstance: any) => FunctionInterface;
+type ComparatorFunctionType = (cents: Cents, otherCents: Cents) => boolean;
+type ValidatorFunctionType = (maybeCents: ValidInputsType) => boolean;
+type CompareCentsFunctionType = (
+  comparator: ComparatorFunctionType,
+  ClassInstance: any,
+) => FunctionInterface;
 
 // http://stackoverflow.com/questions/3885817/how-to-check-if-a-number-is-float-or-integer
 const isInt = (maybeInt: number): boolean => maybeInt % 1 === 0;
 
 const compareCentsFunction: CompareCentsFunctionType = (
-  comparator: Comparator,
+  comparator: ComparatorFunctionType,
   // eslint-disable-next-line @typescript-eslint/naming-convention
   ClassInstance: any,
 ) =>
@@ -47,12 +50,15 @@ const compareCentsFunction: CompareCentsFunctionType = (
     return comparator(cents, otherCents);
   };
 
-const equals: Comparator = (cents, otherCents) => cents.toNumber() === otherCents.toNumber();
-const lessThan: Comparator = (cents, otherCents) => cents.toNumber() < otherCents.toNumber();
-const lessThanOrEqual: Comparator = (cents, otherCents) =>
+const equals: ComparatorFunctionType = (cents, otherCents) =>
+  cents.toNumber() === otherCents.toNumber();
+const lessThan: ComparatorFunctionType = (cents, otherCents) =>
+  cents.toNumber() < otherCents.toNumber();
+const lessThanOrEqual: ComparatorFunctionType = (cents, otherCents) =>
   cents.toNumber() <= otherCents.toNumber();
-const greaterThan: Comparator = (cents, otherCents) => cents.toNumber() > otherCents.toNumber();
-const greaterThanOrEqual: Comparator = (cents, otherCents) =>
+const greaterThan: ComparatorFunctionType = (cents, otherCents) =>
+  cents.toNumber() > otherCents.toNumber();
+const greaterThanOrEqual: ComparatorFunctionType = (cents, otherCents) =>
   cents.toNumber() >= otherCents.toNumber();
 
 const comparators = {
@@ -75,7 +81,7 @@ const comparators = {
 //   Each value must "pass" the validator predicate function. Returns an array of the values.
 const arrayifySplat = function (
   splat: ValidInputsArrayType,
-  validator: Validator,
+  validator: ValidatorFunctionType,
 ): ValidInputsArrayType {
   if (!(splat.length > 0)) {
     throw new Error('Expect at least one argument');
@@ -286,7 +292,6 @@ class Cents {
         `Cannot apply transform '${transform}', is not a supported BigNumber.js method`,
       );
     } else {
-      // return bigNumber[transform](); // TODO(jonas) check me later and try to call the method as function
       return bigNumber;
     }
   }
@@ -303,7 +308,7 @@ class Cents {
     return centsInstance instanceof Cents;
   }
 
-  static isValidDollars: Validator = (maybeDollars) => {
+  static isValidDollars: ValidatorFunctionType = (maybeDollars) => {
     let threw = false;
 
     try {
