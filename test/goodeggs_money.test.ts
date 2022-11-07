@@ -318,14 +318,6 @@ describe('Cents', () => {
         expect(new Cents(1).plus(new Cents(2))).to.have.property('value', 3));
       it('should accept a string param and a new Cents with the correct value', () =>
         expect(new Cents(1).plus('2')).to.have.property('value', 3));
-      it('should allow strict mode true', () => {
-        expect(() => new Cents(5).plus('5')).not.to.throw();
-        expect(() =>
-          new Cents(5).plus('5', {
-            strict: true,
-          }),
-        ).to.throw();
-      });
     });
     describe('minus', () => {
       it('should a new Cents with the correct amount', () =>
@@ -337,14 +329,6 @@ describe('Cents', () => {
           maxZero: true,
         });
         expect(shouldBeZero).to.have.property('value', 0);
-      });
-      it('should allow strict mode true', () => {
-        expect(() => new Cents(5).minus('5')).not.to.throw();
-        expect(() =>
-          new Cents(5).minus('5', {
-            strict: true,
-          }),
-        ).to.throw();
       });
     });
     describe('times', () => {
