@@ -291,8 +291,7 @@ describe('Cents', () => {
     it('should work with a single value splat', () => expect(sum(1)).to.have.property('value', 1));
     it('should work with a multiple value splat', () =>
       expect(sum(1, 2, 3)).to.have.property('value', 6));
-    it('should work with an empty array', () => expect(sum(...[])).to.have.property('value', 0));
-    it('should work with a non-empty array', () =>
+    it('should work by spreading a non-empty array', () =>
       expect(sum(...[1, 2, 3])).to.have.property('value', 6));
     it('should throw an exception when passed no arguments', () => expect(() => sum()).to.throw());
   });
@@ -300,9 +299,7 @@ describe('Cents', () => {
     it('should work with a multiple value splat 100', () =>
       expect(sumDollars(1)).to.have.property('value', 100));
     it('should work with a multiple value splat 350', () =>
-      expect(sumDollars(1, 2.5)).to.have.property('value', 350));
-    it('should work with an empty array', () =>
-      expect(sumDollars(...[])).to.have.property('value', 0));
+      expect(sumDollars(1, 2)).to.have.property('value', 300));
     it('should work with a non-empty array', () =>
       expect(sumDollars(...[1, 2, 3])).to.have.property('value', 600));
     it('should throw an exception when passed no arguments', () =>
