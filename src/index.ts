@@ -1,23 +1,23 @@
 import {BigNumber} from 'bignumber.js';
 
-type Transform = keyof BigNumber | 'round' | 'floor' | 'ceil';
-type ValidInputs = Cents | number | string;
-type ValidInputsArray = ValidInputs[];
+type TransformType = keyof BigNumber | 'round' | 'floor' | 'ceil';
+type ValidInputsType = Cents | number | string;
+type ValidInputsArrayType = ValidInputsType[];
 
-interface Params {
-  transform: Transform;
+interface ParamsInterface {
+  transform: TransformType;
 }
 
-interface Options {
+interface OptionsInterface {
   strict?: boolean;
 }
 
 interface FunctionInterface {
-  (val: any, options?: Options): boolean;
+  (val: any, options?: OptionsInterface): boolean;
 }
 
 type Comparator = (cents: Cents, otherCents: Cents) => boolean;
-type Validator = (maybeCents: ValidInputs) => boolean;
+type Validator = (maybeCents: ValidInputsType) => boolean;
 type CompareCentsFunctionType = (comparator: Comparator, ClassInstance: any) => FunctionInterface;
 
 // http://stackoverflow.com/questions/3885817/how-to-check-if-a-number-is-float-or-integer
@@ -28,7 +28,7 @@ const compareCentsFunction: CompareCentsFunctionType = (
   // eslint-disable-next-line @typescript-eslint/naming-convention
   ClassInstance: any,
 ) =>
-  function (val: any, options?: Options): boolean {
+  function (val: any, options?: OptionsInterface): boolean {
     if (options == null) {
       options = {};
     }
@@ -73,7 +73,10 @@ const comparators = {
 //   validator (boolean) predicate function. Returns the array.
 // Case 2: ... => multiple argument values
 //   Each value must "pass" the validator predicate function. Returns an array of the values.
-const arrayifySplat = function (splat: ValidInputsArray, validator: Validator): ValidInputsArray {
+const arrayifySplat = function (
+  splat: ValidInputsArrayType,
+  validator: Validator,
+): ValidInputsArrayType {
   if (!(splat.length > 0)) {
     throw new Error('Expect at least one argument');
   }
@@ -162,7 +165,7 @@ class Cents {
     return Number(this.value);
   }
 
-  plus(cents: ValidInputs, param?: {strict: boolean}): Cents {
+  plus(cents: ValidInputsType, param?: {strict: boolean}): Cents {
     if (param == null) {
       param = {
         strict: false,
@@ -178,7 +181,7 @@ class Cents {
     return new Cents(this.toBigNumber().plus(new Cents(cents).toNumber()));
   }
 
-  minus(cents: ValidInputs, param?: {strict?: boolean; maxZero?: boolean}): Cents {
+  minus(cents: ValidInputsType, param?: {strict?: boolean; maxZero?: boolean}): Cents {
     if (param == null) {
       param = {
         strict: false,
@@ -201,7 +204,7 @@ class Cents {
     return new Cents(result); // will throw if negative
   }
 
-  times(scalar: number, param?: Params | Record<string, undefined>): Cents {
+  times(scalar: number, param?: ParamsInterface | Record<string, undefined>): Cents {
     // Transform can be any no-arg BigNumber function and should produce a valid Cents value.
     // e.g. 'ceil', 'round'
     if (param == null) {
@@ -218,7 +221,7 @@ class Cents {
     return new Cents(result);
   }
 
-  dividedBy(scalar: number, param?: Params | Record<string, undefined>): Cents {
+  dividedBy(scalar: number, param?: ParamsInterface | Record<string, undefined>): Cents {
     // Transform can be any no-arg BigNumber function and should produce a valid Cents value.
     // e.g. 'ceil', 'round'
     if (param == null) {
@@ -235,7 +238,7 @@ class Cents {
     return new Cents(result);
   }
 
-  percent(percent: number, param?: Params): Cents {
+  percent(percent: number, param?: ParamsInterface): Cents {
     // Is equivalent to @times(percent / 100, {transform})
     // but avoids (percent / 100) returning too many sig figs for BigNumber.
     // TODO(serhalp) this is no longer an issue since BigNumber.js@7.0.0:
@@ -271,7 +274,7 @@ class Cents {
   // allowed magically calling through to underlying BigNumber.js methods. This is a shim to
   // continue to transparently continue to support the frequently used `round` "transform" without
   // breaking backwards compatibility.
-  _applyBackwardsCompatibleTransform(bigNumber: BigNumber, transform: Transform): BigNumber {
+  _applyBackwardsCompatibleTransform(bigNumber: BigNumber, transform: TransformType): BigNumber {
     if (transform === 'round') {
       return bigNumber.integerValue(BigNumber.ROUND_HALF_UP);
     } else if (transform === 'floor') {
@@ -288,7 +291,7 @@ class Cents {
     }
   }
 
-  static isValid(maybeCents: ValidInputs): boolean {
+  static isValid(maybeCents: ValidInputsType): boolean {
     let centsInstance;
 
     try {
@@ -324,26 +327,26 @@ class Cents {
     return new Cents(new BigNumber(maybeInt).integerValue(BigNumber.ROUND_HALF_UP));
   }
 
-  static min(...cents: ValidInputsArray): Cents {
+  static min(...cents: ValidInputsArrayType): Cents {
     cents = arrayifySplat(cents, Cents.isValid);
     const centsNumber = cents.map((cent) => new Cents(cent).toNumber());
     const min = Math.min(...centsNumber);
     return new Cents(min);
   }
 
-  static max(...cents: ValidInputsArray): Cents {
+  static max(...cents: ValidInputsArrayType): Cents {
     cents = arrayifySplat(cents, Cents.isValid);
     const centsNumber = cents.map((cent) => new Cents(cent).toNumber());
     const max = Math.max(...centsNumber);
     return new Cents(max);
   }
 
-  static sum(...cents: ValidInputsArray): Cents {
+  static sum(...cents: ValidInputsArrayType): Cents {
     cents = arrayifySplat(cents, Cents.isValid);
     return cents.map((val) => new Cents(val)).reduce((memo, val) => memo.plus(val), new Cents(0));
   }
 
-  static sumDollars(...dollars: ValidInputsArray): Cents {
+  static sumDollars(...dollars: ValidInputsArrayType): Cents {
     dollars = arrayifySplat(dollars, Cents.isValidDollars);
     return dollars
       .map((val) => new Cents(val))
