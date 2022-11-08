@@ -295,6 +295,9 @@ class Cents {
       throw new TypeError(
         `Cannot apply transform '${transform}', is not a supported BigNumber.js method`,
       );
+    } else if (typeof bigNumber[transform] === 'function') {
+      const bigNumberFuction = bigNumber[transform] as () => BigNumber;
+      return bigNumberFuction();
     } else {
       return bigNumber;
     }
