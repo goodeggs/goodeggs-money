@@ -20,8 +20,6 @@ steps:
       CI: true
       DEPLOY_PRODUCTION: 1
       APP_NAME: goodeggs-money
-      S3_STAGING_BUCKET: goodeggs-goodeggs-money-staging
-      S3_PRODUCTION_BUCKET: goodeggs-goodeggs-money
     command:
       - curl -sSLf https://github.com/goodeggs/travis-utils/raw/master/ops-ui-deploy.sh
       - librato_deploy ops-goodeggs-money
