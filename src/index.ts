@@ -140,7 +140,8 @@ class Cents {
     }
 
     if (typeof this.value !== 'number') {
-      throw new Error(this.value);
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      throw new Error(`${this.value} must be a Number`);
     }
 
     if (isNaN(this.value)) {
@@ -271,11 +272,14 @@ class Cents {
     return !this.is0();
   }
 
+  /**
+   * always show 2 decimal places
+   * @returns {string}
+   */
   toString(): string {
     return `$${new BigNumber(this.toDollars()).toFixed(2)}`;
   }
 
-  // always show 2 decimal places
   // BigNumber.js removed `round()`, `ceil()`, and `floor()` in in v6.0.0. Previously this library
   // allowed magically calling through to underlying BigNumber.js methods. This is a shim to
   // continue to transparently continue to support the frequently used `round` "transform" without
