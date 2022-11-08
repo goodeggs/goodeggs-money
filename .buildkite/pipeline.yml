@@ -1,0 +1,32 @@
+plugin-node-cache: &plugin-node-cache
+  cache_node: true
+
+plugins: &plugins
+  - ssh://git@github.com/goodeggs/goodeggs-core-buildkite-plugin#v0.0.18: *plugin-node-cache
+
+steps:
+  - label: 'Install'
+    command: NODE_ENV=development yarn install --frozen-lockfile
+    plugins: *plugins
+
+  - wait
+
+  - label: 'All Tests'
+    command: yarn test
+    plugins: *plugins
+
+  - label: ':rocket: Deploy'
+    env:
+      CI: true
+      DEPLOY_PRODUCTION: 1
+      APP_NAME: goodegss-money
+      S3_STAGING_BUCKET: goodeggs-goodegss-money-staging
+      S3_PRODUCTION_BUCKET: goodeggs-goodegss-money
+    command:
+      - curl -sSLf https://github.com/goodeggs/travis-utils/raw/master/ops-ui-deploy.sh | AWS_ACCESS_KEY_ID=$$DEPLOY_AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY=$$DEPLOY_AWS_SECRET_ACCESS_KEY sh
+      - librato_deploy ops-goodegss-money
+    plugins:
+      - ssh://git@github.com/goodeggs/goodeggs-core-buildkite-plugin#v0.0.18: *plugin-node-cache
+    branches: master
+    concurrency: 1
+    concurrency_group: 'goodegss-money/deploy'
