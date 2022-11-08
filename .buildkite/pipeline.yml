@@ -19,14 +19,14 @@ steps:
     env:
       CI: true
       DEPLOY_PRODUCTION: 1
-      APP_NAME: goodegss-money
-      S3_STAGING_BUCKET: goodeggs-goodegss-money-staging
-      S3_PRODUCTION_BUCKET: goodeggs-goodegss-money
+      APP_NAME: goodeggs-money
+      S3_STAGING_BUCKET: goodeggs-goodeggs-money-staging
+      S3_PRODUCTION_BUCKET: goodeggs-goodeggs-money
     command:
-      - curl -sSLf https://github.com/goodeggs/travis-utils/raw/master/ops-ui-deploy.sh | AWS_ACCESS_KEY_ID=$$DEPLOY_AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY=$$DEPLOY_AWS_SECRET_ACCESS_KEY sh
-      - librato_deploy ops-goodegss-money
+      - curl -sSLf https://github.com/goodeggs/travis-utils/raw/master/ops-ui-deploy.sh
+      - librato_deploy ops-goodeggs-money
     plugins:
       - ssh://git@github.com/goodeggs/goodeggs-core-buildkite-plugin#v0.0.18: *plugin-node-cache
     branches: master
     concurrency: 1
-    concurrency_group: 'goodegss-money/deploy'
+    concurrency_group: 'goodeggs-money/deploy'
