@@ -185,7 +185,9 @@ class Cents {
       cents = new Cents(cents);
     }
 
-    return new Cents(this.toBigNumber().plus(new Cents(cents).toNumber()));
+    const centsNumber = cents instanceof Cents ? cents.toNumber() : cents;
+
+    return new Cents(this.toBigNumber().plus(centsNumber));
   }
 
   minus(cents: ValidInputsType, param?: {strict?: boolean; maxZero?: boolean}): Cents {
@@ -202,7 +204,9 @@ class Cents {
       cents = new Cents(cents);
     }
 
-    const result = this.toBigNumber().minus(new Cents(cents).toNumber()).toNumber(); // Number; may be negative
+    const centsNumber = cents instanceof Cents ? cents.toNumber() : cents;
+
+    const result = this.toBigNumber().minus(centsNumber).toNumber(); // Number; may be negative
 
     if (maxZero) {
       return new Cents(Math.max(0, result));
