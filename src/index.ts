@@ -13,14 +13,14 @@ interface OptionsInterface {
 }
 
 interface FunctionInterface {
-  (val: any, options?: OptionsInterface): boolean;
+  (val: Cents | number | string, options?: OptionsInterface): boolean;
 }
 
 type ComparatorFunctionType = (cents: Cents, otherCents: Cents) => boolean;
 type ValidatorFunctionType = (maybeCents: ValidInputsType) => boolean;
 type CompareCentsFunctionType = (
   comparator: ComparatorFunctionType,
-  ClassInstance: any,
+  ClassInstance: typeof Cents,
 ) => FunctionInterface;
 
 // http://stackoverflow.com/questions/3885817/how-to-check-if-a-number-is-float-or-integer
@@ -29,9 +29,9 @@ const isInt = (maybeInt: number): boolean => maybeInt % 1 === 0;
 const compareCentsFunction: CompareCentsFunctionType = (
   comparator: ComparatorFunctionType,
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  ClassInstance: any,
+  ClassInstance: typeof Cents,
 ) =>
-  function (val: any, options?: OptionsInterface): boolean {
+  function (val: Cents | number | string, options?: OptionsInterface): boolean {
     if (options == null) {
       options = {};
     }
