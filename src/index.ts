@@ -1,6 +1,9 @@
 import {BigNumber} from 'bignumber.js';
 
-type TransformType = keyof BigNumber | 'round' | 'floor' | 'ceil';
+type OnlyBigNumberFunctions<T extends BigNumber.Instance> = {
+  [Prop in keyof T as T[Prop] extends () => BigNumber ? Prop : never]: T[Prop];
+};
+type TransformType = keyof OnlyBigNumberFunctions<BigNumber> | 'round' | 'floor' | 'ceil';
 type ValidInputsType = Cents | number | string;
 type ValidInputsArrayType = ValidInputsType[];
 
@@ -300,10 +303,11 @@ class Cents {
         `Cannot apply transform '${transform}', is not a supported BigNumber.js method`,
       );
     } else if (typeof bigNumber[transform] === 'function') {
-      const bigNumberFuction = bigNumber[transform] as () => BigNumber;
-      return bigNumberFuction();
+      return bigNumber[transform]();
     } else {
-      return bigNumber;
+      throw new TypeError(
+        `Cannot apply transform '${transform}', is not a supported BigNumber.js method`,
+      );
     }
   }
 
