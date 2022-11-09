@@ -4,5 +4,5 @@
 // - Get a new version of @babel/register with built-in support: https://github.com/babel/babel/pull/6027
 // - Get a version of babel that allows extensions to be configured via .babelrc/package.json: https://github.com/babel/babel/issues/3741
 require('@babel/register')({
-  extensions: ['.ts', '.js'],
+  extensions: ['.ts'],
 });
