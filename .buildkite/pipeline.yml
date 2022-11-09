@@ -23,3 +23,5 @@ steps:
     concurrency: 1
     concurrency_group: 'goodeggs-money/publish'
     plugins: *plugins
+      secrets:
+        NPM_TOKEN: dZ4gJyTD7zE/V95QfCffWZzQ6SxFW2FA8g/s9Lgh4ckkJIKUUf7rBAHZGrtUdZfT1hZY0IS7RuuTIAQMd-BhTQWNA
