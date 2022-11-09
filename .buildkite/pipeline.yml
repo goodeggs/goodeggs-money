@@ -22,6 +22,8 @@ steps:
       - yarn publish
     concurrency: 1
     concurrency_group: 'goodeggs-money/publish'
-    plugins: *plugins
-      secrets:
-        NPM_TOKEN: dZ4gJyTD7zE/V95QfCffWZzQ6SxFW2FA8g/s9Lgh4ckkJIKUUf7rBAHZGrtUdZfT1hZY0IS7RuuTIAQMd-BhTQWNA
+    plugins:
+      - ssh://git@github.com/goodeggs/goodeggs-core-buildkite-plugin#v0.0.18: *plugin-node-cache
+      - ssh://git@github.com/goodeggs/goodeggs-core-buildkite-plugin#v0.0.18:
+          secrets:
+            NPM_TOKEN: dZ4gJyTD7zE/V95QfCffWZzQ6SxFW2FA8g/s9Lgh4ckkJIKUUf7rBAHZGrtUdZfT1hZY0IS7RuuTIAQMd-BhTQWNA
