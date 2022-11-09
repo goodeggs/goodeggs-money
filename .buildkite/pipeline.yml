@@ -15,16 +15,11 @@ steps:
     command: yarn test
     plugins: *plugins
 
-  - label: ':rocket: Deploy'
-    env:
-      CI: true
-      DEPLOY_PRODUCTION: 1
-      APP_NAME: goodeggs-money
+  - label: ':loudspeaker: Publish'
+    if: build.tag != null
     command:
-      - curl -sSLf https://github.com/goodeggs/travis-utils/raw/master/ops-ui-deploy.sh
-      - librato_deploy ops-goodeggs-money
-    plugins:
-      - ssh://git@github.com/goodeggs/goodeggs-core-buildkite-plugin#v0.0.18: *plugin-node-cache
-    branches: master
+      - export PATH="/tmp/ci-tools:./node_modules/.bin:$PATH"
+      - yarn publish
     concurrency: 1
-    concurrency_group: 'goodeggs-money/deploy'
+    concurrency_group: 'goodeggs-money/publish'
+    plugins: *plugins
