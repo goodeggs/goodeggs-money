@@ -1,0 +1,27 @@
+plugin-node-cache: &plugin-node-cache
+  cache_node: true
+
+plugins: &plugins
+  - ssh://git@github.com/goodeggs/goodeggs-core-buildkite-plugin#v0.0.18: *plugin-node-cache
+
+steps:
+  - label: 'Install'
+    command: NODE_ENV=development yarn install --frozen-lockfile
+    plugins: *plugins
+
+  - wait
+
+  - label: 'All Tests'
+    command: yarn test
+    plugins: *plugins
+
+  - label: ':loudspeaker: Publish'
+    if: build.tag != null
+    command: yarn publish
+    plugins:
+      - ssh://git@github.com/goodeggs/goodeggs-core-buildkite-plugin#v0.0.18: *plugin-node-cache
+      - ssh://git@github.com/goodeggs/goodeggs-core-buildkite-plugin#v0.0.18:
+          secrets:
+            NPM_TOKEN: dZ4gJyTD7zE/V95QfCffWZzQ6SxFW2FA8g/s9Lgh4ckkJIKUUf7rBAHZGrtUdZfT1hZY0IS7RuuTIAQMd-BhTQWNA
+    concurrency: 1
+    concurrency_group: 'goodeggs-money/publish'
