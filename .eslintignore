@@ -1,10 +1,6 @@
 **/node_modules
 .vscode/**
-build/**
-log/**
 package.json
-public/**
-**/generated
-src/shared_types/**
-tmp/**
 coverage
+dist/**
+lib/**
