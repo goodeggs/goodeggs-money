@@ -1,6 +1,6 @@
 {
   "name": "goodeggs-money",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Reliable money math with BigNumber  wrapped inside Cents",
   "author": "Good Eggs <open-source@goodeggs.com>",
   "contributors": [
