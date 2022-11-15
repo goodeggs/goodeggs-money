@@ -405,5 +405,9 @@ describe('Cents', () => {
       expect(new Cents(1).toString()).to.equal('$0.01');
       expect(new Cents(10).toString()).to.equal('$0.10');
       expect(new Cents(100).toString()).to.equal('$1.00');
+      expect(new Cents(1000).toString()).to.equal('$10.00');
+      expect(new Cents(1000).toString(0)).to.equal('$10');
+      expect(new Cents(1000).toString(1)).to.equal('$10.0');
+      expect(new Cents(1000).toString(3)).to.equal('$10.000');
     }));
 });

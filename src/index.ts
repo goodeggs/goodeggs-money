@@ -280,11 +280,14 @@ class Cents {
   }
 
   /**
-   * always show 2 decimal places
+   * show 2 decimal places unless specified
+   *
+   * @param decimalPlaces the number of decimal places resolved
+   *
    * @returns {string}
    */
-  toString(): string {
-    return `$${new BigNumber(this.toDollars()).toFixed(2)}`;
+  toString(decimalPlaces = 2): string {
+    return `$${new BigNumber(this.toDollars()).toFixed(decimalPlaces)}`;
   }
 
   // BigNumber.js removed `round()`, `ceil()`, and `floor()` in in v6.0.0. Previously this library
