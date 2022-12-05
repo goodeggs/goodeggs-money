@@ -280,7 +280,7 @@ class Cents {
   }
 
   /**
-   * show 2 decimal places unless specified
+   * show number with dollar sign and 2 decimal places, unless specified
    *
    * @param decimalPlaces the number of decimal places resolved
    *
