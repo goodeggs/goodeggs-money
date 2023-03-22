@@ -2,7 +2,7 @@ plugin-node-cache: &plugin-node-cache
   cache_node: true
 
 plugins: &plugins
-  - ssh://git@github.com/goodeggs/goodeggs-core-buildkite-plugin#v0.0.18: *plugin-node-cache
+  - ssh://git@github.com/goodeggs/goodeggs-core-buildkite-plugin#v0.1.1: *plugin-node-cache
 
 steps:
   - label: 'Install'
@@ -19,8 +19,8 @@ steps:
     if: build.tag != null
     command: yarn publish
     plugins:
-      - ssh://git@github.com/goodeggs/goodeggs-core-buildkite-plugin#v0.0.18: *plugin-node-cache
-      - ssh://git@github.com/goodeggs/goodeggs-core-buildkite-plugin#v0.0.18:
+      - ssh://git@github.com/goodeggs/goodeggs-core-buildkite-plugin#v0.1.1: *plugin-node-cache
+      - ssh://git@github.com/goodeggs/goodeggs-core-buildkite-plugin#v0.1.1:
           secrets:
             NPM_TOKEN: dZ4gJyTD7zE/V95QfCffWZzQ6SxFW2FA8g/s9Lgh4ckkJIKUUf7rBAHZGrtUdZfT1hZY0IS7RuuTIAQMd-BhTQWNA
     concurrency: 1
